@@ -1,0 +1,62 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --color-01: #7c5dfa;
+  --color-02: #9277ff;
+  --color-03: #1e2139;
+  --color-04: #252945;
+  --color-05: #dfe3fa;
+  --color-06: #888eb0;
+  --color-07: #7e88c3;
+  --color-08: #0c0e16;
+  --color-09: #ec5757;
+  --color-10: #ff9797;
+  --color-11: #f8f8fb;
+  --color-12: #141625;
+}
+
+// @media (prefers-color-scheme: dark) {
+//   :root {
+//     --color-background: var(--vt-c-black);
+//     --color-background-soft: var(--vt-c-black-soft);
+//     --color-background-mute: var(--vt-c-black-mute);
+
+//     --color-border: var(--vt-c-divider-dark-2);
+//     --color-border-hover: var(--vt-c-divider-dark-1);
+
+//     --color-heading: var(--vt-c-text-dark-1);
+//     --color-text: var(--vt-c-text-dark-2);
+//   }
+// }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  // margin: 0;
+  // font-weight: normal;
+}
+
+@font-face {
+  font-family: 'League Spartan';
+  src:
+    url('@/assets/fonts/LeagueSpartan-Regular.woff2') format('woff2'),
+    url('@/assets/fonts/LeagueSpartan-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化加载时的字体闪烁问题 */
+}
+
+body {
+  min-height: 100vh;
+  // color: var(--color-text);
+  background: var(--color-11);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family: 'League Spartan', sans-serif;
+  font-size: 15px;
+  // text-rendering: optimizeLegibility;
+  // -webkit-font-smoothing: antialiased;
+  // -moz-osx-font-smoothing: grayscale;
+}

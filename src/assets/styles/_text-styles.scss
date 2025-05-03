@@ -1,0 +1,48 @@
+@use 'sass:map'; // 导入 map 模块
+
+$text-styles: (
+  heading-l: (
+    font-weight: bold,
+    font-size: 36px,
+    line-height: auto,
+    letter-spacing: -1.13px,
+  ),
+  heading-m: (
+    font-weight: bold,
+    font-size: 24px,
+    line-height: auto,
+    letter-spacing: -0.75px,
+  ),
+  heading-s: (
+    font-weight: bold,
+    font-size: 15px,
+    line-height: 24px,
+    letter-spacing: -0.25px,
+  ),
+  heading-s-variant: (
+    font-weight: bold,
+    font-size: 15px,
+    line-height: 15px,
+    letter-spacing: -0.25px,
+  ),
+  body: (
+    font-weight: 500,
+    font-size: 13px,
+    line-height: 18px,
+    letter-spacing: -0.1px,
+  ),
+  body-variant: (
+    font-weight: 500,
+    font-size: 13px,
+    line-height: 15px,
+    letter-spacing: -0.1px,
+  ),
+);
+
+@mixin text-styles($name) {
+  $style: map.get($text-styles, $name);
+  font-weight: map.get($style, font-weight);
+  font-size: map.get($style, font-size);
+  line-height: map.get($style, line-height);
+  letter-spacing: map.get($style, letter-spacing);
+}
