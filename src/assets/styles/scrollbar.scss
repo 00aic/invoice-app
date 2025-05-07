@@ -1,0 +1,51 @@
+/* src/assets/styles/scrollbar.scss */
+/* 全局滚动条样式 */
+:root {
+  /* 滚动条宽度 */
+  --scrollbar-width: 8px;
+  /* 滚动条轨道颜色 */
+  --scrollbar-track-color: var(--color-05);
+  /* 滚动条滑块颜色 */
+  --scrollbar-thumb-color: var(--color-05);
+  /* 滚动条滑块悬停颜色 */
+  --scrollbar-thumb-hover-color: var(--color-05);
+  // 滚动条边框圆角
+  --scrollbar-thumb-border-radius: 4px;
+}
+
+/* 适用于所有滚动条 */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
+}
+
+/* 滚动条轨道 */
+::-webkit-scrollbar-track {
+  // background: var(--scrollbar-track-color);
+  border-radius: var(--scrollbar-thumb-border-radius);
+  background-clip: content-box;
+  margin: 32px; /* 与 padding 一致 */
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+  // background: var(--scrollbar-thumb-color);
+  border-radius: var(--scrollbar-thumb-border-radius);
+  // border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+/* 滚动条滑块悬停状态 */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color);
+}
+
+/* 适用于Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+html {
+  scroll-behavior: smooth;
+}

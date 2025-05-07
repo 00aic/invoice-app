@@ -1,305 +1,281 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import data from '@/assets/data.json'
+import { ref } from 'vue'
+import jsonData from '@/assets/data.json'
 import { formatDate } from '@/utils/dateUtils'
+import UpsertInvoice from './UpsertInvoice.vue'
+import type { Invoice } from '@/types/invoice'
+import { useRouter } from 'vue-router'
+import StatusBadge from '@/components/StatusBadge'
 
-type Status = 'paid' | 'pending' | 'draft'
+const router = useRouter()
 
-const statusColor = computed(() => {
-  return (status: string) => {
-    const colors = {
-      paid: {
-        '--bg-color': 'rgba(51, 214, 159, 0.0571)',
-        '--text-color': '#33d69f',
-      },
-      pending: {
-        '--bg-color': 'rgba(255, 143, 0, 0.0571)',
-        '--text-color': '#FF8F00',
-      },
-      draft: {
-        '--bg-color': 'rgba(55, 59, 83, 0.0571)',
-        '--text-color': '#373B53',
-      },
-    }
-    return colors[status as Status]
-  }
-})
+const data = ref<Invoice[]>(jsonData as Invoice[])
+
+// type Status = 'paid' | 'pending' | 'draft'
+
+// const statusColor = computed(() => {
+//   return (status: string) => {
+//     const colors = {
+//       paid: {
+//         '--bg-color': 'rgba(51, 214, 159, 0.0571)',
+//         '--text-color': '#33d69f',
+//       },
+//       pending: {
+//         '--bg-color': 'rgba(255, 143, 0, 0.0571)',
+//         '--text-color': '#FF8F00',
+//       },
+//       draft: {
+//         '--bg-color': 'rgba(55, 59, 83, 0.0571)',
+//         '--text-color': '#373B53',
+//       },
+//     }
+//     return colors[status as Status]
+//   }
+// })
+
+const showNewInvoice = ref<boolean>(false)
+const handleNewInvoice = () => {
+  showNewInvoice.value = true
+}
+
+const handleDetail = () => {
+  router.push('/invoiceDetail')
+}
 </script>
 
 <template>
-  <div class="container">
-    <nav class="nav">
-      <div class="logo">
-        <div class="logo__wrapper">
-          <div class="logo__wrapper-bg1"></div>
-          <div class="logo__wrapper-bg2"></div>
-          <img class="logo__wrapper-img" src="@/assets/images/logo.svg" alt="Logo" />
+  <div class="page">
+    <div class="header">
+      <div class="summary">
+        <div class="summary__title">Invoices</div>
+        <div class="summary__total">
+          {{ data && data.length > 0 ? `There are ${data.length} tatal invoices` : 'No Invoices' }}
         </div>
       </div>
-      <div class="nav__theme">
-        <img src="@/assets/images/icon-moon.svg" alt="Theme" />
-      </div>
-      <div class="nav__avatar">
-        <img class="nav__avatar-img" src="@/assets/images/image-avatar.jpg" alt="Avatar" />
-      </div>
-    </nav>
-    <main class="page">
-      <div class="header">
-        <div class="summary">
-          <div class="summary__title">Invoices</div>
-          <div class="summary__total">There are {{ data.length }} tatal invoices</div>
+      <div class="operation">
+        <div class="operation__filter">
+          <div class="operation__filter-title">Filter by status</div>
+          <div><img src="@/assets/images/icon-arrow-down.svg" alt="Filter" /></div>
         </div>
-        <div class="operation">
-          <div class="operation__filter">
-            <div class="operation__filter-title">Filter by status</div>
-            <div><img src="@/assets/images/icon-arrow-down.svg" alt="Filter" /></div>
-          </div>
 
-          <div class="operation__plus">
-            <div class="operation__plus-plus">
-              <img src="@/assets/images/icon-plus.svg" alt="Plus" />
-            </div>
-            <span class="operation__plus-name">New Invoice</span>
+        <button class="operation__plus" @click="handleNewInvoice">
+          <div class="operation__plus-wrapper">
+            <img src="@/assets/images/icon-plus.svg" alt="Plus" />
           </div>
-        </div>
+          <span class="operation__plus-name">New Invoice</span>
+        </button>
       </div>
+    </div>
 
-      <div class="table">
-        <div class="table__row" v-for="item in data" :key="item.id">
-          <div class="table__row-id"><span>#</span>{{ item.id }}</div>
-          <div class="table__row-due">{{ formatDate(item.paymentDue) }}</div>
-          <div class="table__row-client">{{ item.clientName }}</div>
-          <div class="table__row-total">${{ item.total }}</div>
-          <div class="table__row-status" :style="statusColor(item.status)">
-            <div class="table__row-status-dot"></div>
-            <div class="table__row-status-name">{{ item.status }}</div>
-          </div>
-          <div class="table__row-arrow">
-            <img src="@/assets/images/icon-arrow-right.svg" alt="" />
-          </div>
+    <div class="table" v-if="data && data.length > 0">
+      <div class="table__row" v-for="item in data" :key="item.id" @click="handleDetail">
+        <div class="table__row-id"><span>#</span>{{ item.id }}</div>
+        <div class="table__row-due">{{ formatDate(item.paymentDue) }}</div>
+        <div class="table__row-client">{{ item.clientName }}</div>
+        <div class="table__row-total">${{ item.total }}</div>
+        <!-- <div class="table__row-status" :style="statusColor(item.status)">
+          <div class="table__row-status-dot"></div>
+          <div class="table__row-status-name">{{ item.status }}</div>
+        </div> -->
+        <StatusBadge :status="item.status" />
+        <div class="table__row-arrow">
+          <img src="@/assets/images/icon-arrow-right.svg" alt="" />
         </div>
       </div>
-    </main>
+    </div>
+    <div class="table table__empty" v-if="!data || data.length === 0">
+      <img class="table__empty-img" src="@/assets/images/illustration-empty.svg" alt="Empty" />
+      <div class="table__empty-title">There is nothing here</div>
+      <div class="table__empty-desc">
+        Create an invoice by clicking the <br /><span>New Invoice</span> button and get started
+      </div>
+    </div>
   </div>
+
+  <UpsertInvoice v-model="showNewInvoice"></UpsertInvoice>
 </template>
 
 <style lang="scss" scoped>
-.container {
+.page {
+  flex: 1;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
 
-  .nav {
+  // flex-wrap: wrap;
+
+  .header {
     display: flex;
-    flex-direction: column;
-    background-color: #373b53;
-    width: 103px;
-    height: 100vh;
-    align-items: center;
-    border-top-right-radius: 20px;
-    border-bottom-right-radius: 20px;
+    justify-content: space-between;
 
-    .logo {
-      flex: 1;
-      width: 100%;
+    .summary {
+      // flex: 1 1 50%;
+      height: 55px;
 
-      &__wrapper {
-        height: 103px;
-        position: relative;
-        display: flex;
-        flex-direction: column;
+      &__title {
+        color: var(--color-08);
+        @include text.text-styles('heading-l');
+      }
 
-        &-bg1 {
-          height: 65%;
-          background-color: var(--color-01);
-          border-top-right-radius: 20px;
-        }
-        &-bg2 {
-          height: 50%;
-          width: 100%;
-          background-color: var(--color-02);
-          border-bottom-right-radius: 20px;
-          border-top-left-radius: 20px;
-          position: absolute;
-          top: 52px;
-        }
-
-        &-img {
-          position: absolute;
-          top: 33.29px;
-          left: 32px;
-          width: 40px;
-          height: 40px;
-        }
+      &__total {
+        color: var(--color-06);
+        @include text.text-styles('body-variant');
       }
     }
 
-    &__theme {
-    }
-
-    &__avatar {
-      padding: 24px 0;
-      border-top: 1px solid #494e6e;
-      margin-top: 32px;
-      width: 100%;
+    .operation {
+      // flex: 1 1 50%;
       display: flex;
-      justify-content: center;
+      gap: 40px;
+      height: 55px;
+      align-items: center;
+      justify-content: end;
 
-      &-img {
-        display: block;
-        height: 40px;
-        width: 40px;
-        border-radius: 50%;
+      &__filter {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+
+        &-title {
+          color: var(--color-08);
+          @include text.text-styles('heading-s-variant');
+        }
+      }
+
+      &__plus {
+        display: flex;
+        gap: 16px;
+        background-color: var(--color-01);
+        border: none;
+        border-radius: 24px;
+        justify-content: center;
+        align-items: center;
+        padding: 8px;
+        cursor: pointer;
+
+        &-wrapper {
+          background-color: white;
+          border-radius: 50%;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          img {
+            display: block;
+          }
+        }
+
+        &-name {
+          color: white;
+        }
       }
     }
   }
 
-  .page {
+  .table {
     flex: 1;
+    margin-top: 64px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 77px 355px 0 252px;
-    background-color: var(--color-11);
-    // flex-wrap: wrap;
+    gap: 16px;
 
-    .header {
+    &__row {
       display: flex;
-      justify-content: space-between;
+      background-color: white;
+      height: 72px;
+      border-radius: 8px;
+      box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.1004);
+      align-items: center;
+      text-align: center;
 
-      .summary {
-        // flex: 1 1 50%;
-        height: 55px;
+      &-id {
+        flex: 1;
+        @include text.text-styles('heading-s-variant');
+        color: var(--color-08);
 
-        &__title {
-          color: var(--color-08);
-          @include text.text-styles('heading-l');
-        }
-
-        &__total {
-          color: var(--color-06);
-          @include text.text-styles('body-variant');
+        span {
+          color: var(--color-07);
         }
       }
 
-      .operation {
-        // flex: 1 1 50%;
-        display: flex;
-        gap: 40px;
-        height: 55px;
-        align-items: center;
-        justify-content: flex-end;
+      &-due {
+        flex: 1;
+        @include text.text-styles('body-variant');
+        color: var(--color-07);
+      }
 
-        &__filter {
-          display: flex;
-          gap: 14px;
-          align-items: center;
+      &-client {
+        flex: 1;
+        @include text.text-styles('body-variant');
+        color: #858bb2;
+      }
 
-          &-title {
-            color: var(--color-08);
-            @include text.text-styles('heading-s-variant');
-          }
-        }
+      &-total {
+        flex: 1;
+        @include text.text-styles('heading-s');
+        color: var(--color-08);
+      }
 
-        &__plus {
-          display: flex;
-          gap: 16px;
-          background-color: var(--color-01);
-          border-radius: 24px;
-          justify-content: center;
-          align-items: center;
-          padding: 8px;
+      // &-status {
+      //   flex: 0 1 104px;
+      //   background-color: var(--bg-color);
+      //   border-radius: 6px;
+      //   height: 40px;
+      //   display: flex;
+      //   gap: 8px;
+      //   align-items: center;
+      //   justify-content: center;
 
-          &-plus {
-            background-color: white;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+      //   &-dot {
+      //     height: 8px;
+      //     width: 8px;
+      //     border-radius: 50%;
+      //     background-color: var(--text-color);
+      //   }
 
-            img {
-              display: block;
-            }
-          }
+      //   &-name {
+      //     color: var(--text-color);
+      //     text-transform: capitalize; /* 每个单词首字母大写 */
+      //     @include text.text-styles('heading-s-variant');
+      //   }
+      // }
 
-          &-name {
-            color: white;
-          }
-        }
+      &-arrow {
+        flex: 0 1 0;
+        padding: 0 24px 0 20px;
+        cursor: pointer;
       }
     }
 
-    .table {
-      flex: 1;
-      margin-top: 64px;
+    &__empty {
+      justify-self: center;
+      align-self: center;
+      width: 241.34px;
+      text-align: center;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      justify-content: center;
+      align-items: center;
 
-      &__row {
-        display: flex;
-        background-color: white;
-        height: 72px;
-        border-radius: 8px;
-        box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.1004);
-        align-items: center;
-        text-align: center;
+      &-img {
+        display: block;
 
-        &-id {
-          flex: 1;
-          @include text.text-styles('heading-s-variant');
-          color: var(--color-08);
+        height: 200px;
+      }
 
-          span {
-            color: var(--color-07);
-          }
-        }
+      &-title {
+        @include text.text-styles('heading-m');
+        color: var(--color-08);
+      }
 
-        &-due {
-          flex: 1;
-          @include text.text-styles('body-variant');
-          color: var(--color-07);
-        }
+      &-desc {
+        @include text.text-styles('body-variant');
+        color: var(--color-06);
 
-        &-client {
-          flex: 1;
-          @include text.text-styles('body-variant');
-          color: #858bb2;
-        }
-
-        &-total {
-          flex: 1;
-          @include text.text-styles('heading-s');
-          color: var(--color-08);
-        }
-
-        &-status {
-          flex: 0 1 104px;
-          background-color: var(--bg-color);
-          border-radius: 6px;
-          height: 40px;
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          justify-content: center;
-
-          &-dot {
-            height: 8px;
-            width: 8px;
-            border-radius: 50%;
-            background-color: var(--text-color);
-          }
-
-          &-name {
-            color: var(--text-color);
-            text-transform: capitalize; /* 每个单词首字母大写 */
-            @include text.text-styles('heading-s-variant');
-          }
-        }
-
-        &-arrow {
-          flex: 0 1 0;
-          padding: 0 24px 0 20px;
+        span {
+          font-weight: bold;
         }
       }
     }
