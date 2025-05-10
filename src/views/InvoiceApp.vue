@@ -6,6 +6,8 @@ import UpsertInvoice from './UpsertInvoice.vue'
 import type { Invoice } from '@/types/invoice'
 import { useRouter } from 'vue-router'
 import StatusBadge from '@/components/StatusBadge'
+import { useInvoiceStore } from '@/stores/invoice'
+import { formatNumber } from '@/utils/numberUtils'
 
 const router = useRouter()
 
@@ -38,8 +40,9 @@ const handleNewInvoice = () => {
   showNewInvoice.value = true
 }
 
-const handleDetail = () => {
-  router.push('/invoiceDetail')
+const handleDetail = (invoice: Invoice) => {
+  useInvoiceStore().setCurrentInvoice(invoice)
+  router.push('/invoiceDetails')
 }
 </script>
 
@@ -68,17 +71,17 @@ const handleDetail = () => {
     </div>
 
     <div class="table" v-if="data && data.length > 0">
-      <div class="table__row" v-for="item in data" :key="item.id" @click="handleDetail">
+      <div class="table__row" v-for="item in data" :key="item.id">
         <div class="table__row-id"><span>#</span>{{ item.id }}</div>
         <div class="table__row-due">{{ formatDate(item.paymentDue) }}</div>
         <div class="table__row-client">{{ item.clientName }}</div>
-        <div class="table__row-total">${{ item.total }}</div>
+        <div class="table__row-total">{{ formatNumber(item.total) }}</div>
         <!-- <div class="table__row-status" :style="statusColor(item.status)">
           <div class="table__row-status-dot"></div>
           <div class="table__row-status-name">{{ item.status }}</div>
         </div> -->
         <StatusBadge :status="item.status" />
-        <div class="table__row-arrow">
+        <div class="table__row-arrow" @click="handleDetail(item)">
           <img src="@/assets/images/icon-arrow-right.svg" alt="" />
         </div>
       </div>

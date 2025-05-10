@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import SimpleBar from 'simplebar-vue'
+import 'simplebar/dist/simplebar.min.css'
 
 const visible = defineModel({ type: Boolean, default: false })
 
@@ -54,10 +56,11 @@ const handleMaskClick = () => {
           <button v-if="closable" class="drawer__header-close" @click="handleClose">&times;</button>
         </slot>
       </div>
-
-      <div class="drawer__body">
-        <slot></slot>
-      </div>
+      <SimpleBar class="scroll">
+        <div class="drawer__body">
+          <slot></slot>
+        </div>
+      </SimpleBar>
 
       <div v-if="$slots.footer" class="drawer__footer">
         <slot name="footer"></slot>
@@ -82,7 +85,7 @@ const handleMaskClick = () => {
   background-color: white;
   display: flex;
   flex-direction: column;
-  padding: 59px 32px 0 56px;
+  padding: 59px 40px 0 56px;
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 
@@ -110,17 +113,12 @@ const handleMaskClick = () => {
 
   &__body {
     flex: 1;
-    overflow: auto;
+    // overflow: hidden;
+    //
   }
 
   &__footer {
-    height: 110px;
-    margin-top: auto;
-    // justify-self: end;
-    border-top-right-radius: 20px;
-    // background-color: black;
-    display: flex;
-    align-items: center;
+    margin: 0 -40px 0 -56px;
   }
 
   &-left {
@@ -201,5 +199,33 @@ const handleMaskClick = () => {
 .slide-bottom-enter-from,
 .slide-bottom-leave-to {
   transform: translateY(100%);
+}
+
+.scroll {
+  // overflow: auto;
+  // max-height: 600px;
+  max-height: calc(100vh - 110px - 137px);
+}
+
+// /* 隐藏原生滚动条 */
+// .custom-scroll ::v-deep(.simplebar-content-wrapper) {
+//   scrollbar-width: none; /* Firefox */
+//   -ms-overflow-style: none; /* IE/Edge */
+// }
+
+// 覆盖 simplebar 样式
+.scroll :deep(.simplebar-scrollbar:before) {
+  background: var(--color-05); // 浅蓝色
+  border-radius: 4px;
+  width: 6px;
+}
+
+.scroll :deep(.simplebar-scrollbar) {
+  // left: 2px;
+}
+
+.custom-scroll :deep(.simplebar-track.simplebar-vertical) {
+  width: 8px;
+  background: transparent;
 }
 </style>

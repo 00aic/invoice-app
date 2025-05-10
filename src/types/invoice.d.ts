@@ -5,7 +5,7 @@ interface Address {
   country: string
 }
 
-interface Item {
+interface InvoiceItem {
   name: string
   quantity: number
   price: number
@@ -25,6 +25,6 @@ export interface Invoice {
   status: Status
   senderAddress: Address
   clientAddress: Address
-  items: Array<Item>
+  items: InvoiceItem[]
   total: number
 }

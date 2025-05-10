@@ -1,6 +1,4 @@
 /* color palette from <https://github.com/vuejs/theme> */
-@use './scrollbar.scss';
-
 :root {
   --color-01: #7c5dfa;
   --color-02: #9277ff;
@@ -14,6 +12,7 @@
   --color-10: #ff9797;
   --color-11: #f8f8fb;
   --color-12: #141625;
+  --color-13: #979797;
 }
 
 // @media (prefers-color-scheme: dark) {

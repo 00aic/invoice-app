@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import type { Invoice } from '@/types/invoice'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import DrawerWrapper from '@/components/DrawerWrapper'
 import FormItem from '@/components/FormItem'
+import { formatNumber } from '@/utils/numberUtils'
 
 const visible = defineModel({ type: Boolean, default: false })
 
@@ -22,7 +23,7 @@ const formData = reactive<Invoice>({
   paymentTerms: 0,
   clientName: '',
   clientEmail: '',
-  status: '',
+  status: 'draft',
   senderAddress: {
     street: '',
     city: '',
@@ -40,6 +41,8 @@ const formData = reactive<Invoice>({
   ...props.data,
 })
 
+const isEdit = computed(() => (formData.id ? true : false))
+
 const schema = yup.object({
   id: yup.string().required("Can't be empty"),
   email: yup.string().required("Can't be empty"),
@@ -50,9 +53,17 @@ const { handleSubmit } = useForm({
   validationSchema: schema,
 })
 
-const handleFormSubmit = handleSubmit((values) => {
-  console.log('提交数据:', values)
-  // API调用...
+const handleFormDiscard = () => {
+  visible.value = false
+}
+
+const handleFormDraft = handleSubmit((values) => {
+  values.status = 'draft'
+  visible.value = false
+})
+
+const handleFormAdd = handleSubmit((values) => {
+  values.status = 'pending'
   visible.value = false
 })
 
@@ -69,6 +80,15 @@ const handleItemAdd = () => {
   })
 }
 
+const handleFormCancel = () => {
+  visible.value = false
+}
+
+const handleFormEdit = handleSubmit((values) => {
+  console.log(values)
+  visible.value = false
+})
+
 const handleItemDelete = (index: number) => {
   formData.items.splice(index, 1)
 }
@@ -78,7 +98,7 @@ const handleItemDelete = (index: number) => {
   <div>
     <DrawerWrapper
       v-model="visible"
-      :title="formData.id ? `Edit #${formData.id}` : 'New Invoice'"
+      :title="isEdit ? `Edit #${formData.id}` : 'New Invoice'"
       :width="616"
       @close="handleDrawerClose"
     >
@@ -190,8 +210,8 @@ const handleItemDelete = (index: number) => {
             <label class="item__name">Item Name</label>
             <label class="item__quantity">Qty.</label>
             <label class="item__price">Price</label>
-            <label class="item__total">Total</label>
-            <label class="item__delete"></label>
+            <label>Total</label>
+            <label></label>
           </div>
           <div
             class="group item"
@@ -209,10 +229,15 @@ const handleItemDelete = (index: number) => {
               v-model="item.price"
               :name="`itemPrice${index}`"
             ></FormItem>
-            <div class="item__total">{{ item.total }}</div>
-            <div class="item__delete" @click="handleItemDelete(index)">
-              <img src="@/assets/images/icon-delete.svg" alt="Delete Item" />
-            </div>
+            <FormItem v-model="item.total" :name="`itemPrice${index}`">
+              <div>{{ formatNumber(item.total, { style: 'decimal' }) }}</div>
+            </FormItem>
+
+            <FormItem :name="`itemPrice${index}`">
+              <div @click="handleItemDelete(index)">
+                <img src="@/assets/images/icon-delete.svg" alt="Delete Item" />
+              </div>
+            </FormItem>
           </div>
 
           <div class="item__add" @click="handleItemAdd">+ Add New Item</div>
@@ -220,8 +245,16 @@ const handleItemDelete = (index: number) => {
       </form>
 
       <template #footer>
-        <button @click="visible = false">取消</button>
-        <button class="submit-btn" @click="handleFormSubmit">提交</button>
+        <div class="footer" v-if="!isEdit">
+          <button class="footer__cancel" @click="handleFormDiscard">Discard</button>
+          <button class="footer__draft" @click="handleFormDraft">Save as Draft</button>
+          <button class="footer__save" @click="handleFormAdd">Save & Send</button>
+        </div>
+
+        <div class="footer" v-if="isEdit">
+          <button class="footer__cancel" @click="handleFormCancel">Cancel</button>
+          <button class="footer__save" @click="handleFormEdit">Save Changes</button>
+        </div>
       </template>
     </DrawerWrapper>
   </div>
@@ -231,7 +264,7 @@ const handleItemDelete = (index: number) => {
 .form {
   display: flex;
   flex-direction: column;
-  margin-right: 16px;
+  margin-right: 24px;
 }
 .fieldset {
   border: none;
@@ -263,6 +296,10 @@ const handleItemDelete = (index: number) => {
     gap: 16px;
     align-items: center;
 
+    :last-child {
+      margin-bottom: 0px;
+    }
+
     &__name {
       flex-basis: 214px;
     }
@@ -275,12 +312,12 @@ const handleItemDelete = (index: number) => {
       flex-basis: 100px;
     }
 
-    &__total {
-      padding: 0 20px 0 0;
-    }
+    // &__total {
+    //   // padding: 0 20px 0 0;
+    // }
 
-    &__delete {
-    }
+    // &__delete {
+    // }
 
     &__add {
       display: flex;
@@ -288,18 +325,64 @@ const handleItemDelete = (index: number) => {
       justify-content: center;
       height: 48px;
       background-color: #f9fafe;
-      border-color: #979797;
+      border-color: var(--color-13);
       border-radius: 24px;
       width: 100%;
       @include text.text-styles('heading-s-variant');
       color: var(--color-07);
       cursor: pointer;
+      margin-top: 15px;
+
+      &:hover {
+        background-color: var(--color-05);
+      }
     }
 
     &-label {
       @include text.text-styles('body-variant');
       color: var(--color-07);
     }
+  }
+}
+
+:deep(.drawer__footer) {
+  padding: 39px 56px;
+  background-color: white;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  border-color: var(--color-13);
+}
+
+.footer {
+  display: flex;
+  justify-content: end;
+  @include text.text-styles('heading-s-variant');
+  height: 48px;
+  gap: 8px;
+
+  button {
+    padding: 16px 24px;
+    border: none;
+    border-radius: 24px;
+    border-color: var(--color-13);
+    cursor: pointer;
+  }
+
+  &__cancel {
+    background-color: #f9fafe;
+    color: var(--color-07);
+    justify-self: start;
+  }
+
+  &__draft {
+    background-color: #373b53;
+    color: var(--color-06);
+    margin-left: auto;
+  }
+
+  &__save {
+    background-color: var(--color-01);
+    color: white;
   }
 }
 </style>
