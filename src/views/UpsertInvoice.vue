@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import type { Invoice } from '@/types/invoice'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
 import DrawerWrapper from '@/components/DrawerWrapper'
 import FormItem from '@/components/FormItem'
 import { formatNumber } from '@/utils/numberUtils'
+import { addInvoice, updateInvoice } from '@/api/invoice'
+
+const emit = defineEmits<{ edit: [data: Invoice]; add: [] }>()
 
 const visible = defineModel({ type: Boolean, default: false })
 
@@ -44,12 +47,12 @@ const formData = reactive<Invoice>({
 const isEdit = computed(() => (formData.id ? true : false))
 
 const schema = yup.object({
-  id: yup.string().required("Can't be empty"),
-  email: yup.string().required("Can't be empty"),
+  // id: yup.string().required("Can't be empty"),
+  // email: yup.string().required("Can't be empty"),
 })
 
 // 使用表单hooks
-const { handleSubmit } = useForm({
+const { handleSubmit } = useForm<Invoice>({
   validationSchema: schema,
 })
 
@@ -57,19 +60,17 @@ const handleFormDiscard = () => {
   visible.value = false
 }
 
-const handleFormDraft = handleSubmit((values) => {
-  values.status = 'draft'
+const handleFormDraft = handleSubmit(() => {
+  formData.status = 'draft'
   visible.value = false
 })
 
-const handleFormAdd = handleSubmit((values) => {
-  values.status = 'pending'
+const handleFormAdd = handleSubmit(async () => {
+  formData.status = 'pending'
+  await addInvoice(formData)
   visible.value = false
+  emit('add')
 })
-
-const handleDrawerClose = () => {
-  console.log('抽屉已关闭')
-}
 
 const handleItemAdd = () => {
   formData.items.push({
@@ -84,14 +85,35 @@ const handleFormCancel = () => {
   visible.value = false
 }
 
-const handleFormEdit = handleSubmit((values) => {
-  console.log(values)
+const handleFormEdit = handleSubmit(async () => {
+  console.log('formData', formData)
+  await updateInvoice(formData)
   visible.value = false
+  emit('edit', formData)
 })
-
 const handleItemDelete = (index: number) => {
   formData.items.splice(index, 1)
 }
+
+// 只计算不生成新数组
+const calculateTotals = () => {
+  let grandTotal = 0
+  formData.items.forEach((item) => {
+    const newTotal = item.quantity * item.price
+    if (item.total !== newTotal) {
+      item.total = newTotal
+    }
+    grandTotal += newTotal
+  })
+  formData.total = grandTotal
+}
+
+// 监听items及其内部变化
+watch(
+  () => [...formData.items], // 浅拷贝触发监听
+  calculateTotals,
+  { deep: true, immediate: true },
+)
 </script>
 
 <template>
@@ -100,7 +122,6 @@ const handleItemDelete = (index: number) => {
       v-model="visible"
       :title="isEdit ? `Edit #${formData.id}` : 'New Invoice'"
       :width="616"
-      @close="handleDrawerClose"
     >
       <form class="form">
         <div class="fieldset">
@@ -218,22 +239,26 @@ const handleItemDelete = (index: number) => {
             v-for="(item, index) in formData.items"
             :key="`item.name${index}`"
           >
-            <FormItem class="item__name" v-model="item.name" :name="`itemName${index}`"></FormItem>
+            <FormItem
+              class="item__name"
+              v-model="item.name"
+              :name="`items[${index}].name`"
+            ></FormItem>
             <FormItem
               class="item__quantity"
               v-model="item.quantity"
-              :name="`itemQty${index}`"
+              :name="`items[${index}].quantity`"
             ></FormItem>
             <FormItem
               class="item__price"
               v-model="item.price"
-              :name="`itemPrice${index}`"
+              :name="`items[${index}].price`"
             ></FormItem>
-            <FormItem v-model="item.total" :name="`itemPrice${index}`">
+            <FormItem v-model="item.total" :name="`items[${index}].total`">
               <div>{{ formatNumber(item.total, { style: 'decimal' }) }}</div>
             </FormItem>
 
-            <FormItem :name="`itemPrice${index}`">
+            <FormItem name="">
               <div @click="handleItemDelete(index)">
                 <img src="@/assets/images/icon-delete.svg" alt="Delete Item" />
               </div>

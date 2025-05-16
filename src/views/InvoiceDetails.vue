@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import StatusBadge from '@/components/StatusBadge'
-import { useInvoiceStore } from '@/stores/invoice'
 import { formatDate } from '@/utils/dateUtils'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { formatNumber } from '@/utils/numberUtils'
 import UpsertInvoice from './UpsertInvoice.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog'
+import { deleteInvoiceById, getInvoiceById, updateInvoice } from '@/api/invoice'
+import type { Invoice } from '@/types/invoice'
 
 const router = useRouter()
+const route = useRoute()
 
-const currentInvoice = useInvoiceStore().currentInvoice
+const currentInvoice = ref<Invoice>()
 
 const handleGoBack = () => {
   router.push('/')
@@ -25,10 +27,30 @@ const showDeleteConfirm = ref<boolean>(false)
 const handleInvoiceDelete = () => {
   showDeleteConfirm.value = true
 }
-const handleDeleteConfirm = () => {}
+const handleDeleteConfirm = async () => {
+  await deleteInvoiceById(currentInvoice.value?.id ?? '')
+  router.push('/')
+}
 
-const handleInvoicePaid = () => {
-  // currentInvoice?.status = 'paid'
+const refreshInvoice = (data: Invoice) => {
+  currentInvoice.value = data
+}
+
+onMounted(async () => {
+  currentInvoice.value = (await getInvoiceById(route.params.id as string)).data
+})
+
+const showPaidConfirm = ref(false)
+
+const handleInvoicePaid = async () => {
+  showPaidConfirm.value = true
+}
+
+const handlePaidConfirm = async () => {
+  if (currentInvoice.value) {
+    currentInvoice.value.status = 'paid'
+    await updateInvoice(currentInvoice.value)
+  }
 }
 </script>
 <template>
@@ -119,13 +141,20 @@ const handleInvoicePaid = () => {
       </div>
     </div>
 
-    <UpsertInvoice v-model="showEditInvoice" :data="currentInvoice" />
+    <UpsertInvoice v-model="showEditInvoice" :data="currentInvoice" @edit="refreshInvoice" />
     <ConfirmationDialog
       v-model="showDeleteConfirm"
       title="Confirm Deletion"
       :message="`Are you sure you want to delete invoice #${currentInvoice?.id}?This action cannot be undone.`"
       confirm-text="Delete"
       @confirm="handleDeleteConfirm"
+    />
+
+    <ConfirmationDialog
+      v-model="showPaidConfirm"
+      title="Confirm Mask"
+      :message="`Are you sure you want to mask the status of invoice #${currentInvoice?.id} to paid?`"
+      @confirm="handlePaidConfirm"
     />
   </div>
 </template>

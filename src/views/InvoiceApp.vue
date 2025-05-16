@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import jsonData from '@/assets/data.json'
+import { onMounted, ref } from 'vue'
+// import jsonData from '@/assets/data.json'
 import { formatDate } from '@/utils/dateUtils'
 import UpsertInvoice from './UpsertInvoice.vue'
 import type { Invoice } from '@/types/invoice'
 import { useRouter } from 'vue-router'
 import StatusBadge from '@/components/StatusBadge'
-import { useInvoiceStore } from '@/stores/invoice'
 import { formatNumber } from '@/utils/numberUtils'
+import { getInvoices } from '@/api/invoice'
+// import FillterWrapper from '@/components/FilterWrapper'
 
 const router = useRouter()
 
-const data = ref<Invoice[]>(jsonData as Invoice[])
+const data = ref<Invoice[]>()
+// const data = ref<Invoice[]>(jsonData as Invoice[])
 
 // type Status = 'paid' | 'pending' | 'draft'
 
@@ -41,9 +43,21 @@ const handleNewInvoice = () => {
 }
 
 const handleDetail = (invoice: Invoice) => {
-  useInvoiceStore().setCurrentInvoice(invoice)
-  router.push('/invoiceDetails')
+  // useInvoiceStore().setCurrentInvoice(invoice)
+  router.push(`/invoiceDetails/${invoice.id}`)
 }
+
+onMounted(async () => {
+  data.value = (await getInvoices()).data
+})
+
+const refreshInvoices = async () => {
+  data.value = (await getInvoices()).data
+}
+
+const handleFilter = () => {}
+
+const onStatusChange = () => {}
 </script>
 
 <template>
@@ -56,10 +70,12 @@ const handleDetail = (invoice: Invoice) => {
         </div>
       </div>
       <div class="operation">
-        <div class="operation__filter">
+        <div class="operation__filter" @click="handleFilter">
           <div class="operation__filter-title">Filter by status</div>
           <div><img src="@/assets/images/icon-arrow-down.svg" alt="Filter" /></div>
         </div>
+
+        <!-- <FillterWrapper @update:filters="onStatusChange" /> -->
 
         <button class="operation__plus" @click="handleNewInvoice">
           <div class="operation__plus-wrapper">
@@ -71,7 +87,7 @@ const handleDetail = (invoice: Invoice) => {
     </div>
 
     <div class="table" v-if="data && data.length > 0">
-      <div class="table__row" v-for="item in data" :key="item.id">
+      <div class="table__row" v-for="item in data" :key="item.id" @click="handleDetail(item)">
         <div class="table__row-id"><span>#</span>{{ item.id }}</div>
         <div class="table__row-due">{{ formatDate(item.paymentDue) }}</div>
         <div class="table__row-client">{{ item.clientName }}</div>
@@ -81,7 +97,7 @@ const handleDetail = (invoice: Invoice) => {
           <div class="table__row-status-name">{{ item.status }}</div>
         </div> -->
         <StatusBadge :status="item.status" />
-        <div class="table__row-arrow" @click="handleDetail(item)">
+        <div class="table__row-arrow">
           <img src="@/assets/images/icon-arrow-right.svg" alt="" />
         </div>
       </div>
@@ -95,7 +111,7 @@ const handleDetail = (invoice: Invoice) => {
     </div>
   </div>
 
-  <UpsertInvoice v-model="showNewInvoice"></UpsertInvoice>
+  <UpsertInvoice v-model="showNewInvoice" @add="refreshInvoices"></UpsertInvoice>
 </template>
 
 <style lang="scss" scoped>
@@ -138,6 +154,7 @@ const handleDetail = (invoice: Invoice) => {
         display: flex;
         gap: 14px;
         align-items: center;
+        cursor: pointer;
 
         &-title {
           color: var(--color-08);
@@ -192,6 +209,7 @@ const handleDetail = (invoice: Invoice) => {
       box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.1004);
       align-items: center;
       text-align: center;
+      cursor: pointer;
 
       &-id {
         flex: 1;
@@ -248,7 +266,6 @@ const handleDetail = (invoice: Invoice) => {
       &-arrow {
         flex: 0 1 0;
         padding: 0 24px 0 20px;
-        cursor: pointer;
       }
     }
 
