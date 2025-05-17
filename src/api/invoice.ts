@@ -28,3 +28,8 @@ export const deleteInvoiceById = (id: string) => {
 export const getInvoiceById = (id: string) => {
   return http.get<Invoice>(`/invoices/${id}`)
 }
+
+export const getInvoiceByStatus = (statusList: string[]) => {
+  const statuses = statusList.join(',')
+  return http.get<Invoice[]>(`/invoices/status/${statuses}`)
+}

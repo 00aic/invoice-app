@@ -5,6 +5,7 @@ import {
   addInvoice,
   deleteInvoiceById,
   getInvoiceById,
+  getInvoiceByStatus,
   getInvoices,
   updateInvoice,
 } from '@/mocks/db/invoice.mocks'
@@ -26,8 +27,36 @@ const handlers = [
 
         const invoice = getInvoiceById(id)
         if (!invoice) {
-          return HttpResponse.json({ code: 404, error: 'Invoice not found' }, { status: 404 })
+          return HttpResponse.json({ code: 500, error: 'Invoice not found' }, { status: 500 })
         }
+
+        return HttpResponse.json(
+          {
+            code: 200,
+            message: 'Invoices retrieved successfully',
+            data: invoice,
+          },
+          {
+            status: 200, // 返回成功的状态码
+          },
+        )
+      } catch (error) {
+        return HttpResponse.json({ code: 500, error: 'Invalid payload' + error }, { status: 500 })
+      }
+    },
+  ),
+
+  http.get<{ statuses: string }, never, ApiResponse<Invoice[]>>(
+    `${import.meta.env.VITE_API_BASE}/invoices/status/:statuses`,
+    async ({ params }) => {
+      await delay(1) // 模拟网络延迟
+      try {
+        const statuses = params.statuses
+        const statusList: string[] = statuses.split(',').map((item: string) => item.trim())
+        const invoice = getInvoiceByStatus(statusList)
+        // if (!invoice) {
+        //   return HttpResponse.json({ code: 404, error: 'Invoice not found' }, { status: 404 })
+        // }
 
         return HttpResponse.json(
           {

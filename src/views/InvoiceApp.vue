@@ -7,8 +7,8 @@ import type { Invoice } from '@/types/invoice'
 import { useRouter } from 'vue-router'
 import StatusBadge from '@/components/StatusBadge'
 import { formatNumber } from '@/utils/numberUtils'
-import { getInvoices } from '@/api/invoice'
-// import FillterWrapper from '@/components/FilterWrapper'
+import { getInvoices, getInvoiceByStatus } from '@/api/invoice'
+import FilterWrapper from '@/components/FilterWrapper'
 
 const router = useRouter()
 
@@ -55,9 +55,27 @@ const refreshInvoices = async () => {
   data.value = (await getInvoices()).data
 }
 
-const handleFilter = () => {}
+const statusList = [
+  {
+    value: 'draft',
+    label: 'Draft',
+  },
+  {
+    value: 'pending',
+    label: 'Pending',
+  },
+  {
+    value: 'paid',
+    label: 'Paid',
+  },
+]
+const filterSelected = ref<string[]>(['draft', 'pending', 'paid'])
+const handleFilter = async (selected: string[]) => {
+  filterSelected.value = selected
+  data.value = selected.length !== 0 ? (await getInvoiceByStatus(selected)).data : []
+}
 
-const onStatusChange = () => {}
+// const onStatusChange = () => {}
 </script>
 
 <template>
@@ -70,12 +88,12 @@ const onStatusChange = () => {}
         </div>
       </div>
       <div class="operation">
-        <div class="operation__filter" @click="handleFilter">
-          <div class="operation__filter-title">Filter by status</div>
-          <div><img src="@/assets/images/icon-arrow-down.svg" alt="Filter" /></div>
-        </div>
-
-        <!-- <FillterWrapper @update:filters="onStatusChange" /> -->
+        <FilterWrapper
+          title="Filter by status"
+          v-model="filterSelected"
+          :data="statusList"
+          @filter="handleFilter"
+        />
 
         <button class="operation__plus" @click="handleNewInvoice">
           <div class="operation__plus-wrapper">
@@ -149,18 +167,6 @@ const onStatusChange = () => {}
       height: 55px;
       align-items: center;
       justify-content: end;
-
-      &__filter {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-        cursor: pointer;
-
-        &-title {
-          color: var(--color-08);
-          @include text.text-styles('heading-s-variant');
-        }
-      }
 
       &__plus {
         display: flex;

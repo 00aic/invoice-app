@@ -19,7 +19,9 @@ const handleGoBack = () => {
 }
 
 const showEditInvoice = ref<boolean>(false)
+const upsertInvoiceRef = ref<InstanceType<typeof UpsertInvoice> | null>(null)
 const handleInvoiceEdit = () => {
+  upsertInvoiceRef.value?.resetForm()
   showEditInvoice.value = true
 }
 
@@ -141,7 +143,12 @@ const handlePaidConfirm = async () => {
       </div>
     </div>
 
-    <UpsertInvoice v-model="showEditInvoice" :data="currentInvoice" @edit="refreshInvoice" />
+    <UpsertInvoice
+      ref="upsertInvoiceRef"
+      v-model="showEditInvoice"
+      :data="currentInvoice"
+      @edit="refreshInvoice"
+    />
     <ConfirmationDialog
       v-model="showDeleteConfirm"
       title="Confirm Deletion"

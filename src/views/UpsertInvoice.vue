@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import type { Invoice } from '@/types/invoice'
 import { useForm } from 'vee-validate'
 import * as yup from 'yup'
@@ -7,6 +7,7 @@ import DrawerWrapper from '@/components/DrawerWrapper'
 import FormItem from '@/components/FormItem'
 import { formatNumber } from '@/utils/numberUtils'
 import { addInvoice, updateInvoice } from '@/api/invoice'
+import { cloneDeep } from 'lodash'
 
 const emit = defineEmits<{ edit: [data: Invoice]; add: [] }>()
 
@@ -41,10 +42,9 @@ const formData = reactive<Invoice>({
   },
   items: [],
   total: 0,
-  ...props.data,
 })
 
-const isEdit = computed(() => (formData.id ? true : false))
+const isEdit = ref<boolean>(false)
 
 const schema = yup.object({
   // id: yup.string().required("Can't be empty"),
@@ -60,9 +60,11 @@ const handleFormDiscard = () => {
   visible.value = false
 }
 
-const handleFormDraft = handleSubmit(() => {
+const handleFormDraft = handleSubmit(async () => {
   formData.status = 'draft'
+  await addInvoice(formData)
   visible.value = false
+  emit('add')
 })
 
 const handleFormAdd = handleSubmit(async () => {
@@ -114,6 +116,21 @@ watch(
   calculateTotals,
   { deep: true, immediate: true },
 )
+watch(
+  () => props.data,
+  (newVal) => {
+    if (newVal) {
+      Object.assign(formData, cloneDeep(newVal))
+    }
+    isEdit.value = !!formData.id
+  },
+)
+
+const resetForm = () => {
+  Object.assign(formData, cloneDeep(props.data))
+}
+
+defineExpose({ resetForm })
 </script>
 
 <template>
@@ -259,7 +276,7 @@ watch(
             </FormItem>
 
             <FormItem name="">
-              <div @click="handleItemDelete(index)">
+              <div @click="handleItemDelete(index)" class="item__delete">
                 <img src="@/assets/images/icon-delete.svg" alt="Delete Item" />
               </div>
             </FormItem>
@@ -341,8 +358,9 @@ watch(
     //   // padding: 0 20px 0 0;
     // }
 
-    // &__delete {
-    // }
+    &__delete {
+      cursor: pointer;
+    }
 
     &__add {
       display: flex;
