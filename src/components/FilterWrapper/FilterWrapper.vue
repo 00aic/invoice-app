@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-interface DataOption {
+interface Option {
   value: string | number
   label: string
 }
 interface Props {
   title?: string
-  data: DataOption[]
+  options: Option[]
 }
 withDefaults(defineProps<Props>(), {
   title: 'Filter',
@@ -17,9 +17,9 @@ const handleDropdown = () => {
   isOpen.value = !isOpen.value
 }
 
-const selected = defineModel<string[]>({ default: () => [] })
+const selected = defineModel<string[] | number[]>({ default: () => [] })
 
-const emit = defineEmits<{ filter: [selected: string[]] }>()
+const emit = defineEmits<{ filter: [selected: string[] | number[]] }>()
 
 const handleChange = () => {
   emit('filter', selected.value)
@@ -38,12 +38,12 @@ const handleChange = () => {
       </div>
     </div>
     <div class="options" v-if="isOpen">
-      <label v-for="item in data" :key="item.value" class="option">
-        <input type="checkbox" :value="item.value" v-model="selected" @change="handleChange" />
+      <label v-for="option in options" :key="option.value" class="option">
+        <input type="checkbox" :value="option.value" v-model="selected" @change="handleChange" />
         <div class="option__check">
           <img src="@/assets/images/icon-check.svg" alt="Checkbox" />
         </div>
-        <span class="option__label">{{ item.label }}</span>
+        <span class="option__label">{{ option.label }}</span>
       </label>
     </div>
   </div>
@@ -78,7 +78,7 @@ const handleChange = () => {
     transform: translateX(-50%); // 向左平移自身宽度的一半，实现居中
     border-color: var(--color-13);
     border-radius: 8px;
-    box-shadow: 0 10px 20px 0 rgba(72, 84, 1159, 0.25);
+    box-shadow: 0 10px 20px 0 var(--color-14);
     background-color: white;
     padding: 24px;
     display: flex;

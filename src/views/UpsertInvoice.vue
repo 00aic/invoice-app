@@ -8,6 +8,7 @@ import FormItem from '@/components/FormItem'
 import { formatNumber } from '@/utils/numberUtils'
 import { addInvoice, updateInvoice } from '@/api/invoice'
 import { cloneDeep } from 'lodash'
+import SelectPicker from '@/components/SelectPicker'
 
 const emit = defineEmits<{ edit: [data: Invoice]; add: [] }>()
 
@@ -88,7 +89,6 @@ const handleFormCancel = () => {
 }
 
 const handleFormEdit = handleSubmit(async () => {
-  console.log('formData', formData)
   await updateInvoice(formData)
   visible.value = false
   emit('edit', formData)
@@ -131,6 +131,25 @@ const resetForm = () => {
 }
 
 defineExpose({ resetForm })
+
+const paymentTermOptions = [
+  {
+    value: 1,
+    label: 'Net 1 Day',
+  },
+  {
+    value: 7,
+    label: 'Net 7 Days',
+  },
+  {
+    value: 14,
+    label: 'Net 14 Days',
+  },
+  {
+    value: 30,
+    label: 'Net 30 Days',
+  },
+]
 </script>
 
 <template>
@@ -225,12 +244,11 @@ defineExpose({ resetForm })
               label="Payment Terms"
               v-slot="{ field }"
             >
-              <select v-bind="field">
-                <option :value="1">Net 1 Day</option>
-                <option :value="7">Net 7 Days</option>
-                <option :value="14">Net 14 Days</option>
-                <option :value="30">Net 30 Days</option>
-              </select>
+              <SelectPicker
+                v-bind="field"
+                :model-value="field.value"
+                :options="paymentTermOptions"
+              />
             </FormItem>
           </div>
 

@@ -34,8 +34,8 @@ const handleDeleteConfirm = async () => {
   router.push('/')
 }
 
-const refreshInvoice = (data: Invoice) => {
-  currentInvoice.value = data
+const refreshInvoice = async (data: Invoice) => {
+  currentInvoice.value = (await getInvoiceById(data.id ?? '')).data
 }
 
 onMounted(async () => {

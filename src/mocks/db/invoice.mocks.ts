@@ -98,8 +98,17 @@ export const deleteInvoiceById = (id: string) => {
 }
 
 // 修改一条
-export const updateInvoice = (updated: Invoice) => {
-  const data = getInvoices().map((inv) => (inv.id === updated.id ? updated : inv))
+export const updateInvoice = (updatedInvoice: Invoice) => {
+  const data = getInvoices().map((invoice) => {
+    if (invoice.id === updatedInvoice.id) {
+      updatedInvoice.paymentDue = generatePaymentDue(
+        updatedInvoice.createdAt,
+        updatedInvoice.paymentTerms,
+      )
+      return updatedInvoice
+    }
+    return invoice
+  })
   saveInvoices(data)
 }
 
@@ -108,7 +117,6 @@ export const addInvoice = (invoice: Invoice) => {
   const data = getInvoices()
   invoice.id = generateId()
   invoice.paymentDue = generatePaymentDue(invoice.createdAt, invoice.paymentTerms)
-  console.log(invoice)
   data.push(invoice)
   saveInvoices(data)
 }

@@ -55,7 +55,7 @@ const refreshInvoices = async () => {
   data.value = (await getInvoices()).data
 }
 
-const statusList = [
+const statusOptions = [
   {
     value: 'draft',
     label: 'Draft',
@@ -70,9 +70,9 @@ const statusList = [
   },
 ]
 const filterSelected = ref<string[]>(['draft', 'pending', 'paid'])
-const handleFilter = async (selected: string[]) => {
-  filterSelected.value = selected
-  data.value = selected.length !== 0 ? (await getInvoiceByStatus(selected)).data : []
+const handleFilter = async (selected: string[] | number[]) => {
+  filterSelected.value = selected as string[]
+  data.value = selected.length !== 0 ? (await getInvoiceByStatus(selected as string[])).data : []
 }
 
 // const onStatusChange = () => {}
@@ -91,7 +91,7 @@ const handleFilter = async (selected: string[]) => {
         <FilterWrapper
           title="Filter by status"
           v-model="filterSelected"
-          :data="statusList"
+          :options="statusOptions"
           @filter="handleFilter"
         />
 
