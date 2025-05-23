@@ -9,6 +9,7 @@ import { formatNumber } from '@/utils/numberUtils'
 import { addInvoice, updateInvoice } from '@/api/invoice'
 import { cloneDeep } from 'lodash'
 import SelectPicker from '@/components/SelectPicker'
+import DatePicker from '@/components/DatePicker'
 
 const emit = defineEmits<{ edit: [data: Invoice]; add: [] }>()
 
@@ -233,10 +234,10 @@ const paymentTermOptions = [
             <FormItem
               v-model="formData.createdAt"
               name="createdAt"
-              label="Invoice Date"
+              label="Issue Date"
               v-slot="{ field }"
             >
-              <input v-bind="field" type="date" id="createdAt" />
+              <DatePicker v-bind="field" :model-value="field.value" />
             </FormItem>
             <FormItem
               v-model="formData.paymentTerms"

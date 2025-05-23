@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import StatusBadge from '@/components/StatusBadge'
-import { formatDate } from '@/utils/dateUtils'
+import { formatIntlDate } from '@/utils/dateUtils'
 import { useRouter, useRoute } from 'vue-router'
 import { formatNumber } from '@/utils/numberUtils'
 import UpsertInvoice from './UpsertInvoice.vue'
@@ -91,11 +91,15 @@ const handlePaidConfirm = async () => {
         <div class="primary__date">
           <div class="primary__wrapper">
             <div class="primary__title">Invoice Date</div>
-            <div class="primary__content">{{ formatDate(currentInvoice?.createdAt ?? '') }}</div>
+            <div class="primary__content">
+              {{ formatIntlDate(currentInvoice?.createdAt ?? '') }}
+            </div>
           </div>
           <div class="primary__wrapper">
             <div class="primary__title">Payment Due</div>
-            <div class="primary__content">{{ formatDate(currentInvoice?.paymentDue ?? '') }}</div>
+            <div class="primary__content">
+              {{ formatIntlDate(currentInvoice?.paymentDue ?? '') }}
+            </div>
           </div>
         </div>
 

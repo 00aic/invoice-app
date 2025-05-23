@@ -63,11 +63,14 @@ const handleDropdown = () => {
   .header {
     width: 100%;
     display: flex;
-    border: 1px solid var(--color-01);
+    border: 1px solid var(--color-05);
     border-radius: 4px;
     background-color: white;
     align-items: center;
     padding: 0 20px;
+    &:hover {
+      border-color: var(--color-01);
+    }
 
     &__title {
       flex: 1;
@@ -99,6 +102,9 @@ const handleDropdown = () => {
     .option {
       padding: 15px 24px;
       border-bottom: 1px solid var(--color-05);
+      &:hover {
+        color: var(--color-01);
+      }
     }
   }
 }
