@@ -69,14 +69,16 @@ const showError = computed(() => {
 
   :deep(input),
   :deep(select),
-  :deep(textarea) {
+  :deep(textarea),
+  :deep(.vee-form) {
     width: 100%;
     border-radius: 4px;
     height: 48px;
-    border: 1px solid var(--color-05);
+    border: 1px solid var(--color-border);
     padding: 0 20px;
     @include text.text-styles('heading-s-variant');
-    color: var(--color-08);
+    color: var(--color-text);
+    background-color: var(--color-background-1);
 
     &:focus {
       border-color: var(--color-02);
@@ -88,7 +90,7 @@ const showError = computed(() => {
   :deep(select::placeholder),
   :deep(textarea::placeholder) {
     @include text.text-styles('heading-s-variant');
-    color: var(--color-08);
+    color: var(--color-text);
     opacity: 0.4;
   }
 

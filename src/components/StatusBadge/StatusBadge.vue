@@ -17,8 +17,8 @@ const statusColor = computed(() => {
       '--text-color': '#FF8F00',
     },
     draft: {
-      '--bg-color': 'rgba(55, 59, 83, 0.0571)',
-      '--text-color': '#373B53',
+      '--bg-color': 'var(--color-status-draft-bg)',
+      '--text-color': 'var(--color-status-draft)',
     },
   }
   return colors[props.status]

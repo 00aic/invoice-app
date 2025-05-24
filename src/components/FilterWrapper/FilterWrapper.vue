@@ -60,7 +60,7 @@ const handleChange = () => {
     cursor: pointer;
 
     &__title {
-      color: var(--color-08);
+      color: var(--color-text);
       @include text.text-styles('heading-s-variant');
     }
     &__arrow {
@@ -79,7 +79,7 @@ const handleChange = () => {
     border-color: var(--color-13);
     border-radius: 8px;
     box-shadow: 0 10px 20px 0 var(--color-14);
-    background-color: white;
+    background-color: var(--color-background-1);
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -104,7 +104,7 @@ const handleChange = () => {
         justify-content: center;
         border-radius: 2px;
         border: 1px solid var(--color-01);
-        background-color: var(--color-05);
+        background-color: var(--color-background-4);
 
         img {
           display: none;

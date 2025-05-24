@@ -186,7 +186,7 @@ $primary-gap: 13px;
 
     &__title {
       @include text.text-styles('heading-s-variant');
-      color: var(--color-08);
+      color: var(--color-text);
     }
   }
 
@@ -194,7 +194,7 @@ $primary-gap: 13px;
     display: flex;
     justify-content: space-between;
     height: 88px;
-    background-color: white;
+    background-color: var(--color-background-1);
     padding: 24px 32px;
     border-radius: 8px;
 
@@ -202,6 +202,7 @@ $primary-gap: 13px;
       display: flex;
       align-items: center;
       gap: 20px;
+      color: var(--color-status);
     }
 
     &__button {
@@ -219,7 +220,7 @@ $primary-gap: 13px;
 
       &-edit {
         width: 73px;
-        background-color: #f9fafe;
+        background-color: var(--color-background-2);
         color: var(--color-07);
       }
 
@@ -238,7 +239,7 @@ $primary-gap: 13px;
   }
 
   .container {
-    background-color: white;
+    background-color: var(--color-background-1);
     display: flex;
     flex-direction: column;
     padding: 48px;
@@ -260,7 +261,7 @@ $primary-gap: 13px;
         }
 
         &-id {
-          color: var(--color-08);
+          color: var(--color-text);
         }
 
         &-desc {
@@ -323,7 +324,7 @@ $primary-gap: 13px;
         font-size: 15px;
         line-height: 20px;
         letter-spacing: -0.25px;
-        color: var(--color-08);
+        color: var(--color-text);
       }
     }
   }
@@ -333,7 +334,7 @@ $primary-gap: 13px;
       display: flex;
       flex-direction: column;
       gap: 32px;
-      background-color: #f9fafe;
+      background-color: var(--color-background-2);
       padding: 32px;
       border-top-right-radius: 8px;
       border-top-left-radius: 8px;
@@ -368,14 +369,14 @@ $primary-gap: 13px;
           color: var(--color-07);
           &:first-child,
           &:last-child {
-            color: var(--color-08);
+            color: var(--color-text);
           }
         }
       }
     }
 
     &__price {
-      background-color: #373b53;
+      background-color: var(--color-background-3);
       height: 80px;
       color: white;
       display: flex;

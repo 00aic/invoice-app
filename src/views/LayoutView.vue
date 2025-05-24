@@ -1,7 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useThemeStore } from '@/stores/theme'
+import { onMounted } from 'vue'
+
+const themeStore = useThemeStore()
+onMounted(() => {
+  themeStore.applyTheme()
+})
+</script>
 <template>
   <div class="layout">
-    <nav class="layout__nav">
+    <nav class="nav">
       <div class="logo">
         <div class="logo__wrapper">
           <div class="logo__wrapper-bg1"></div>
@@ -9,8 +17,13 @@
           <img class="logo__wrapper-img" src="@/assets/images/logo.svg" alt="Logo" />
         </div>
       </div>
-      <div class="nav__theme">
-        <img src="@/assets/images/icon-moon.svg" alt="Theme" />
+      <div class="theme" @click="themeStore.toggleTheme()">
+        <img
+          v-if="themeStore.currentTheme === 'moon'"
+          src="@/assets/images/icon-moon.svg"
+          alt="Theme"
+        />
+        <img v-else src="@/assets/images/icon-sun.svg" alt="Theme" />
       </div>
       <div class="nav__avatar">
         <img class="nav__avatar-img" src="@/assets/images/image-avatar.jpg" alt="Avatar" />
@@ -25,11 +38,12 @@
 .layout {
   display: flex;
   flex: 1;
+  background-color: var(--color-background);
 
-  &__nav {
+  .nav {
     display: flex;
     flex-direction: column;
-    background-color: #373b53;
+    background-color: var(--color-background-nav);
     width: 103px;
     min-height: 100vh;
     align-items: center;
@@ -71,7 +85,8 @@
       }
     }
 
-    &__theme {
+    .theme {
+      cursor: pointer;
     }
 
     &__avatar {
@@ -93,7 +108,7 @@
   &__main {
     flex: 1;
     padding: 77px 355px 0 252px;
-    background-color: var(--color-11);
+    background-color: var(--color-background);
   }
 }
 </style>

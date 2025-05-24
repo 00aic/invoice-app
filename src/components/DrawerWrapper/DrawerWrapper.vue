@@ -82,7 +82,7 @@ const handleMaskClick = () => {
 .drawer {
   position: fixed;
   z-index: 1001;
-  background-color: white;
+  background-color: var(--color-background-5);
   display: flex;
   flex-direction: column;
   padding: 59px 40px 0 56px;
@@ -100,12 +100,12 @@ const handleMaskClick = () => {
       font-size: 24px;
       line-height: 32px;
       letter-spacing: -0.5px;
-      color: var(--color-08);
+      color: var(--color-text);
     }
 
     &-close {
       border: 0;
-      background-color: white;
+      background-color: var(--color-background-1);
       @include text.text-styles('heading-s');
       cursor: pointer;
     }
@@ -215,7 +215,7 @@ const handleMaskClick = () => {
 
 // 覆盖 simplebar 样式
 .scroll :deep(.simplebar-scrollbar:before) {
-  background: var(--color-05); // 浅蓝色
+  background: var(--color-border);
   border-radius: 4px;
   width: 6px;
 }

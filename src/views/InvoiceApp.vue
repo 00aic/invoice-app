@@ -29,8 +29,8 @@ const data = ref<Invoice[]>()
 //         '--text-color': '#FF8F00',
 //       },
 //       draft: {
-//         '--bg-color': 'rgba(55, 59, 83, 0.0571)',
-//         '--text-color': '#373B53',
+//         '--bg-color': 'var(--color-status-draft-bg)',
+//         '--text-color': 'var(--color-status-draft)',
 //       },
 //     }
 //     return colors[status as Status]
@@ -150,12 +150,12 @@ const handleFilter = async (selected: string[] | number[]) => {
       height: 55px;
 
       &__title {
-        color: var(--color-08);
+        color: var(--color-text);
         @include text.text-styles('heading-l');
       }
 
       &__total {
-        color: var(--color-06);
+        color: var(--color-text-1);
         @include text.text-styles('body-variant');
       }
     }
@@ -209,7 +209,7 @@ const handleFilter = async (selected: string[] | number[]) => {
 
     &__row {
       display: flex;
-      background-color: white;
+      background-color: var(--color-background-1);
       height: 72px;
       border-radius: 8px;
       box-shadow: 0 10px 10px -10px rgba(72, 84, 159, 0.1004);
@@ -220,7 +220,7 @@ const handleFilter = async (selected: string[] | number[]) => {
       &-id {
         flex: 1;
         @include text.text-styles('heading-s-variant');
-        color: var(--color-08);
+        color: var(--color-text);
 
         span {
           color: var(--color-07);
@@ -236,13 +236,13 @@ const handleFilter = async (selected: string[] | number[]) => {
       &-client {
         flex: 1;
         @include text.text-styles('body-variant');
-        color: #858bb2;
+        color: var(--color-client);
       }
 
       &-total {
         flex: 1;
         @include text.text-styles('heading-s');
-        color: var(--color-08);
+        color: var(--color-text);
       }
 
       // &-status {
@@ -293,12 +293,12 @@ const handleFilter = async (selected: string[] | number[]) => {
 
       &-title {
         @include text.text-styles('heading-m');
-        color: var(--color-08);
+        color: var(--color-text);
       }
 
       &-desc {
         @include text.text-styles('body-variant');
-        color: var(--color-06);
+        color: var(--color-text-1);
 
         span {
           font-weight: bold;

@@ -63,7 +63,7 @@ const handleConfirm = () => {
   }
 
   &-container {
-    background-color: white;
+    background-color: var(--color-background-1);
     padding: 48px;
     border-radius: 8px;
     border-color: var(--color-13);
@@ -80,7 +80,7 @@ const handleConfirm = () => {
       font-size: 24px;
       line-height: 32px;
       letter-spacing: -0.5px;
-      color: var(--color-08);
+      color: var(--color-text);
     }
   }
 
@@ -90,7 +90,7 @@ const handleConfirm = () => {
       font-size: 13px;
       line-height: 22px;
       letter-spacing: -0.1px;
-      color: var(--color-06);
+      color: var(--color-text-1);
     }
   }
 
@@ -110,7 +110,7 @@ const handleConfirm = () => {
     }
     &-cancel {
       color: var(--color-07);
-      background-color: #f9fafe;
+      background-color: var(--color-background-2);
     }
 
     &-confirm {

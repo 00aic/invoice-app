@@ -335,7 +335,7 @@ const paymentTermOptions = [
               v-model="item.price"
               :name="`items[${index}].price`"
             ></FormItem>
-            <FormItem v-model="item.total" :name="`items[${index}].total`">
+            <FormItem class="item__total" v-model="item.total" :name="`items[${index}].total`">
               <div>{{ formatNumber(item.total, { style: 'decimal' }) }}</div>
             </FormItem>
 
@@ -422,9 +422,10 @@ const paymentTermOptions = [
         flex-basis: 100px;
       }
 
-      // &__total {
-      //   // padding: 0 20px 0 0;
-      // }
+      &__total {
+        // padding: 0 20px 0 0;
+        color: var(--color-text-1);
+      }
 
       &__delete {
         cursor: pointer;
@@ -435,7 +436,7 @@ const paymentTermOptions = [
         align-items: center;
         justify-content: center;
         height: 48px;
-        background-color: #f9fafe;
+        background-color: var(--color-background-2);
         border-color: var(--color-13);
         border-radius: 24px;
         width: 100%;
@@ -445,7 +446,7 @@ const paymentTermOptions = [
         margin-top: 15px;
 
         &:hover {
-          background-color: var(--color-05);
+          background-color: var(--color-background-2);
         }
       }
 
@@ -468,7 +469,7 @@ const paymentTermOptions = [
 
 :deep(.drawer__footer) {
   padding: 39px 56px;
-  background-color: white;
+  background-color: var(--color-background-1);
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
   border-color: var(--color-13);
@@ -490,14 +491,14 @@ const paymentTermOptions = [
   }
 
   &__cancel {
-    background-color: #f9fafe;
+    background-color: var(--color-background-2);
     color: var(--color-07);
     justify-self: start;
   }
 
   &__draft {
-    background-color: #373b53;
-    color: var(--color-06);
+    background-color: var(--color-15);
+    color: var(--color-text-1);
     margin-left: auto;
   }
 

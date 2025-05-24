@@ -148,14 +148,14 @@ const handleSelect = (day: { date: Date; isCurrentMonth: boolean }) => {
   width: 240px;
   height: 48px;
   @include text.text-styles('heading-s-variant');
-  color: var(--color-08);
+  color: var(--color-text);
 
   .header {
     display: flex;
     width: 100%;
-    border: 1px solid var(--color-05);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
-    background-color: white;
+    background-color: var(--color-background-1);
     align-items: center;
     padding: 0 20px;
     cursor: pointer;
@@ -177,7 +177,7 @@ const handleSelect = (day: { date: Date; isCurrentMonth: boolean }) => {
     flex-direction: column;
     border-radius: 8px;
     box-shadow: 0 10px 20px var(--color-14);
-    background-color: white;
+    background-color: var(--color-background-1);
     border-color: var(--color-13);
     padding: 26px 19px;
     // transform: translateZ(0); // 强制新图层
