@@ -15,7 +15,8 @@ const mountMock = async () => {
   // if (import.meta.env.VITE_MOCK_ENABLED === 'true') {
   // if (import.meta.env.DEV) {
   try {
-    const { mock } = await import('@/mocks/browser')
+    const { initMock } = await import('@/mocks/browser')
+    const mock = await initMock()
     await mock.start()
     console.log('Mock server started')
   } catch (error) {
