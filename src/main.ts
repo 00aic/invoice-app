@@ -13,15 +13,15 @@ app.use(router)
 
 const mountMock = async () => {
   // if (import.meta.env.VITE_MOCK_ENABLED === 'true') {
-  if (import.meta.env.DEV) {
-    try {
-      const { mock } = await import('@/mocks/browser')
-      await mock.start()
-      console.log('Mock server started')
-    } catch (error) {
-      console.error('Mock server failed:', error)
-    }
+  // if (import.meta.env.DEV) {
+  try {
+    const { mock } = await import('@/mocks/browser')
+    await mock.start()
+    console.log('Mock server started')
+  } catch (error) {
+    console.error('Mock server failed:', error)
   }
+  // }
 }
 
 await mountMock()
