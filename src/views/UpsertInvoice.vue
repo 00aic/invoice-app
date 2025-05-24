@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import type { Invoice } from '@/types/invoice'
-import { useForm } from 'vee-validate'
+import { useForm, useIsFormValid } from 'vee-validate'
 import * as yup from 'yup'
 import DrawerWrapper from '@/components/DrawerWrapper'
 import FormItem from '@/components/FormItem'
@@ -14,6 +14,8 @@ import DatePicker from '@/components/DatePicker'
 const emit = defineEmits<{ edit: [data: Invoice]; add: [] }>()
 
 const visible = defineModel({ type: Boolean, default: false })
+
+const showError = ref<boolean>(false)
 
 interface Props {
   data?: Invoice
@@ -48,15 +50,58 @@ const formData = reactive<Invoice>({
 
 const isEdit = ref<boolean>(false)
 
+const requiredMsg = "Can't be empty"
 const schema = yup.object({
-  // id: yup.string().required("Can't be empty"),
-  // email: yup.string().required("Can't be empty"),
+  createdAt: yup.string().required(requiredMsg),
+  description: yup.string().required(requiredMsg),
+  paymentTerms: yup.number().moreThan(0, requiredMsg),
+  clientName: yup.string().required(requiredMsg),
+  clientEmail: yup.string().required(requiredMsg),
+  senderAddress: yup.object({
+    street: yup.string().required(requiredMsg),
+    city: yup.string().required(requiredMsg),
+    postCode: yup.string().required(requiredMsg),
+    country: yup.string().required(requiredMsg),
+  }),
+  clientAddress: yup.object({
+    street: yup.string().required(requiredMsg),
+    city: yup.string().required(requiredMsg),
+    postCode: yup.string().required(requiredMsg),
+    country: yup.string().required(requiredMsg),
+  }),
+  items: yup
+    .array()
+    .of(
+      yup.object({
+        name: yup.string().typeError('').required(' '),
+        quantity: yup
+          .number()
+          .typeError('') // 自定义非数字错误信息
+          .required('')
+          .moreThan(0, ''),
+        price: yup
+          .number()
+          .typeError('') // 自定义非数字错误信息
+          .required('')
+          .moreThan(0, ''),
+      }),
+    ) // 每个 items 元素必须符合 invoiceItemSchema
+    .min(1, requiredMsg), // 确保 items 数组至少有一个元素
 })
 
 // 使用表单hooks
-const { handleSubmit } = useForm<Invoice>({
+const { handleSubmit, errors } = useForm<Invoice>({
   validationSchema: schema,
 })
+// 实时表单校验状态
+const isFormValid = useIsFormValid()
+
+// 👇 实时监听整个表单的校验状态
+watch(isFormValid, (isValid) => {
+  showError.value = !isValid
+})
+
+const invalidFieldCount = computed(() => Object.keys(errors.value).length)
 
 const handleFormDiscard = () => {
   visible.value = false
@@ -294,7 +339,7 @@ const paymentTermOptions = [
               <div>{{ formatNumber(item.total, { style: 'decimal' }) }}</div>
             </FormItem>
 
-            <FormItem name="">
+            <FormItem name="delete">
               <div @click="handleItemDelete(index)" class="item__delete">
                 <img src="@/assets/images/icon-delete.svg" alt="Delete Item" />
               </div>
@@ -302,6 +347,10 @@ const paymentTermOptions = [
           </div>
 
           <div class="item__add" @click="handleItemAdd">+ Add New Item</div>
+        </div>
+        <div v-if="showError" class="error">
+          <div>- All fields must be added</div>
+          <div>- {{ invalidFieldCount }} item must be added</div>
         </div>
       </form>
 
@@ -326,84 +375,94 @@ const paymentTermOptions = [
   display: flex;
   flex-direction: column;
   margin-right: 24px;
-}
-.fieldset {
-  border: none;
-  display: flex;
-  flex-direction: column;
 
-  .legend {
-    margin-bottom: 24px;
-    @include text.text-styles('heading-s-variant');
-    color: var(--color-01);
-  }
-
-  .table {
-    margin-bottom: 14px;
-    font-weight: bold;
-    font-size: 18px;
-    line-height: 32px;
-    letter-spacing: -0.38px;
-    color: #777f98;
-  }
-
-  .group {
+  .fieldset {
+    border: none;
     display: flex;
-    gap: 24px;
-    flex: 0 1 0;
-  }
+    flex-direction: column;
 
-  .item {
-    gap: 16px;
-    align-items: center;
-
-    :last-child {
-      margin-bottom: 0px;
-    }
-
-    &__name {
-      flex-basis: 214px;
-    }
-
-    &__quantity {
-      flex-basis: 70px;
-    }
-
-    &__price {
-      flex-basis: 100px;
-    }
-
-    // &__total {
-    //   // padding: 0 20px 0 0;
-    // }
-
-    &__delete {
-      cursor: pointer;
-    }
-
-    &__add {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 48px;
-      background-color: #f9fafe;
-      border-color: var(--color-13);
-      border-radius: 24px;
-      width: 100%;
+    .legend {
+      margin-bottom: 24px;
       @include text.text-styles('heading-s-variant');
-      color: var(--color-07);
-      cursor: pointer;
-      margin-top: 15px;
+      color: var(--color-01);
+    }
 
-      &:hover {
-        background-color: var(--color-05);
+    .table {
+      margin-bottom: 14px;
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 32px;
+      letter-spacing: -0.38px;
+      color: #777f98;
+    }
+
+    .group {
+      display: flex;
+      gap: 24px;
+      flex: 0 1 0;
+    }
+
+    .item {
+      gap: 16px;
+      align-items: center;
+
+      :last-child {
+        margin-bottom: 0px;
+      }
+
+      &__name {
+        flex-basis: 214px;
+      }
+
+      &__quantity {
+        flex-basis: 70px;
+      }
+
+      &__price {
+        flex-basis: 100px;
+      }
+
+      // &__total {
+      //   // padding: 0 20px 0 0;
+      // }
+
+      &__delete {
+        cursor: pointer;
+      }
+
+      &__add {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 48px;
+        background-color: #f9fafe;
+        border-color: var(--color-13);
+        border-radius: 24px;
+        width: 100%;
+        @include text.text-styles('heading-s-variant');
+        color: var(--color-07);
+        cursor: pointer;
+        margin-top: 15px;
+
+        &:hover {
+          background-color: var(--color-05);
+        }
+      }
+
+      &-label {
+        @include text.text-styles('body-variant');
+        color: var(--color-07);
       }
     }
+  }
 
-    &-label {
-      @include text.text-styles('body-variant');
-      color: var(--color-07);
-    }
+  .error {
+    font-weight: 600;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: -0.21px;
+    color: var(--color-09);
+    margin-top: 33px;
   }
 }
 

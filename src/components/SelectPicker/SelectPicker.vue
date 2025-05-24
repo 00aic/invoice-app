@@ -28,7 +28,7 @@ const handleDropdown = () => {
 </script>
 <template>
   <div class="select">
-    <div class="header" @click="handleDropdown">
+    <div class="header vee-form" @click="handleDropdown">
       <span class="header__title">{{ selectedOption?.label }}</span>
       <div>
         <img

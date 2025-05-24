@@ -11,7 +11,8 @@ defineProps<Props>()
 
 const showError = computed(() => {
   return (meta: { touched: boolean }, errors: string[]) => {
-    return meta.touched && errors[0]
+    const result = meta.touched && errors[0]
+    return !!(result || result === '')
   }
 })
 </script>
@@ -94,7 +95,8 @@ const showError = computed(() => {
   &.error-border {
     :deep(input),
     :deep(select),
-    :deep(textarea) {
+    :deep(textarea),
+    :deep(.vee-form) {
       border-color: var(--color-09);
     }
   }

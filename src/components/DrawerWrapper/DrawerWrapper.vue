@@ -220,9 +220,9 @@ const handleMaskClick = () => {
   width: 6px;
 }
 
-.scroll :deep(.simplebar-scrollbar) {
-  // left: 2px;
-}
+// .scroll :deep(.simplebar-scrollbar) {
+//   left: 2px;
+// }
 
 .custom-scroll :deep(.simplebar-track.simplebar-vertical) {
   width: 8px;

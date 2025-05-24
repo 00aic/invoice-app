@@ -108,7 +108,7 @@ const handleSelect = (day: { date: Date; isCurrentMonth: boolean }) => {
 </script>
 <template>
   <div class="date">
-    <div class="header" @click="handleDropdown">
+    <div class="header vee-form" @click="handleDropdown">
       <span class="header__title">{{ selectedShowDate }}</span>
       <div><img src="@/assets/images/icon-calendar.svg" alt="calendar" /></div>
     </div>
