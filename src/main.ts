@@ -24,6 +24,12 @@ const mountMock = async () => {
   // }
 }
 
-await mountMock()
+// 该方式生产环境下有问题
+// await mountMock()
+// app.mount('#app')
 
-app.mount('#app')
+// 没有后台，因此生产环境下启用mock数据
+;(async () => {
+  await mountMock() // 确保 mountMock 是异步的
+  app.mount('#app')
+})()

@@ -1,31 +1,19 @@
-import { setupWorker } from 'msw/browser'
-import { autoImportHandlers } from './handlers/autoImport'
+import { setupWorker, type SetupWorker } from 'msw/browser'
 
-const handlers = await autoImportHandlers()
-export const worker = setupWorker(...handlers)
+// 该方式生产环境下有问题
+// import { autoImportHandlers } from './handlers/autoImport'
 
-// onUnhandledRequest(req) {
-//     // 1. 总是放行未处理的请求
-//     req.passthrough()
+// const handlers = await autoImportHandlers()
+// export const worker = setupWorker(...handlers)
 
-//     // 2. 只在shouldMock=false时打印警告（避免生产环境日志污染）
-//     if (!shouldMock(req) && import.meta.env.DEV) {
-//       console.warn('[MSW] Bypassed real request:', req.method, req.url)
-//     }
-//   }
-
-// 静态资源排除列表
-const staticAssets = [
-  /\.vue$/,
-  /\.css$/,
-  /\.js$/,
-  /\.png$/,
-  /\.jpg$/,
-  /\.svg$/,
-  /\.ico$/,
-  /^\/@vite\/client$/,
-  /^\/@id\/vite-plugin-vue:main/,
-]
+// 没有后台，因此生产环境下启用mock数据
+let worker: SetupWorker // 声明 worker 变量
+// 动态加载 handlers 并初始化 worker
+import('./handlers/autoImport').then(({ autoImportHandlers }) => {
+  autoImportHandlers().then((handlers) => {
+    worker = setupWorker(...handlers)
+  })
+})
 
 // 暴露开发工具方法
 export const mock = {
