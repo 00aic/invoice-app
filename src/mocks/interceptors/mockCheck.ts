@@ -11,7 +11,8 @@ const globalRequestInterceptor = http.all('*', async ({ request }) => {
 
 // 判断逻辑（可提取到单独文件）
 function shouldMock(req: Request) {
-  if (import.meta.env.PROD) return false
+  // if (import.meta.env.PROD) return false
+
   return (
     req.headers.get('X-Mock-Request') === 'true' ||
     window.__API_DEBUG__?.[new URL(req.url).pathname]?.forceMock

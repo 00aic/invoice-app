@@ -22,6 +22,12 @@ api.get('/real-api', { mock: false })
 api.get('/mock-api', { mock: true })
 ```
 
+可以通过在env.development文件和env.production文件配置是否整体启用mock：
+
+```typescript
+VITE_MOCK_ENABLED = true
+```
+
 动态调试需求
 在 Chrome DevTools 中快速切换单个接口的 Mock 状态：
 
@@ -117,4 +123,15 @@ window.__API_DEBUG__ = {
     delay: 1000, // 1秒延迟
   },
 }
+```
+
+构建时，vite.config.js配置？？？？
+
+```typescript
+// 构建时排除Mock代码
+// build: {
+//   rollupOptions: {
+//     external: ['msw'],
+//   },
+// },
 ```

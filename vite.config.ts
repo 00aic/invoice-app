@@ -23,4 +23,10 @@ export default defineConfig({
       },
     },
   },
+  // 构建时排除Mock代码
+  // build: {
+  //   rollupOptions: {
+  //     external: ['msw'],
+  //   },
+  // },
 })

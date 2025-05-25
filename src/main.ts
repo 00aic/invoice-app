@@ -12,10 +12,12 @@ app.use(createPinia())
 app.use(router)
 
 const mountMock = async () => {
-  // if (import.meta.env.VITE_MOCK_ENABLED === 'true') {
-  if (import.meta.env.DEV) {
+  if (import.meta.env.VITE_MOCK_ENABLED === 'true') {
+    // if (import.meta.env.DEV) {
     try {
-      const { mock } = await import('@/mocks/browser')
+      // const { mock } = await import('@/mocks/browser')
+      const { initMock } = await import('@/mocks/browser')
+      const mock = await initMock()
       await mock.start()
       console.log('Mock server started')
     } catch (error) {
@@ -24,6 +26,7 @@ const mountMock = async () => {
   }
 }
 
-await mountMock()
-
-app.mount('#app')
+;(async () => {
+  await mountMock() // 确保 mountMock 是异步的
+  app.mount('#app')
+})()

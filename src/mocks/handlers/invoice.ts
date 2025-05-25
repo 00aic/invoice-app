@@ -10,12 +10,30 @@ import {
   updateInvoice,
 } from '@/mocks/db/invoice.mocks'
 import type { ApiResponse } from '@/mocks/mock'
+import { apiConfig } from '@/config/api'
+
+const baseURL = apiConfig.mockBaseURL
 
 const handlers = [
+  http.get<never, never, ApiResponse<Invoice[]>>(`${baseURL}/invoices`, async ({}) => {
+    await delay(1) // 模拟网络延迟
+    // 生成一个包含 5 个随机用户的数组
+    return HttpResponse.json(
+      {
+        code: 200,
+        message: 'Invoices retrieved successfully',
+        data: getInvoices(),
+      },
+      {
+        status: 200, // 返回成功的状态码
+      },
+    )
+  }),
+
   // 带参数的路由
   // http.get<PathParams, RequestBody, ResponseType>
   http.get<{ id: string }, never, ApiResponse<Invoice>>(
-    `${import.meta.env.VITE_API_BASE}/invoices/:id`,
+    `${baseURL}/invoices/:id`,
     async ({ params }) => {
       await delay(1) // 模拟网络延迟
       try {
@@ -47,7 +65,7 @@ const handlers = [
   ),
 
   http.get<{ statuses: string }, never, ApiResponse<Invoice[]>>(
-    `${import.meta.env.VITE_API_BASE}/invoices/status/:statuses`,
+    `${baseURL}/invoices/status/:statuses`,
     async ({ params }) => {
       await delay(1) // 模拟网络延迟
       try {
@@ -74,79 +92,55 @@ const handlers = [
     },
   ),
 
-  http.get<never, never, ApiResponse<Invoice[]>>(
-    `${import.meta.env.VITE_API_BASE}/invoices`,
-    async ({}) => {
-      await delay(1) // 模拟网络延迟
-      // 生成一个包含 5 个随机用户的数组
-      return HttpResponse.json(
-        {
-          code: 200,
-          message: 'Invoices retrieved successfully',
-          data: getInvoices(),
-        },
-        {
-          status: 200, // 返回成功的状态码
-        },
-      )
-    },
-  ),
+  http.post<never, Invoice, ApiResponse<Invoice>>(`${baseURL}/invoices`, async ({ request }) => {
+    await delay(1) // 模拟网络延迟
 
-  http.post<never, Invoice, ApiResponse<Invoice>>(
-    `${import.meta.env.VITE_API_BASE}/invoices`,
-    async ({ request }) => {
-      await delay(1) // 模拟网络延迟
+    // 从请求体中获取传递的用户数据
+    const body = await request.json() // 自动推断为 IUser
+    // const newUser: User = await request.json()
+    // 返回状态码 201 表示成功创建
+    addInvoice(body)
+    return HttpResponse.json(
+      {
+        code: 201,
+        message: 'Invoices retrieved successfully',
+      },
+      {
+        status: 201, // 创建成功状态码
+      },
+    )
 
-      // 从请求体中获取传递的用户数据
-      const body = await request.json() // 自动推断为 IUser
-      // const newUser: User = await request.json()
-      // 返回状态码 201 表示成功创建
-      addInvoice(body)
-      return HttpResponse.json(
-        {
-          code: 201,
-          message: 'Invoices retrieved successfully',
-        },
-        {
-          status: 201, // 创建成功状态码
-        },
-      )
+    // return HttpResponse.json(
+    //   { success: true, data: body },
+    //   { status: 201, headers: { 'X-Mock': 'true' } }
+    // )
+  }),
 
-      // return HttpResponse.json(
-      //   { success: true, data: body },
-      //   { status: 201, headers: { 'X-Mock': 'true' } }
-      // )
-    },
-  ),
+  http.put<never, Invoice, ApiResponse<Invoice>>(`${baseURL}/invoices`, async ({ request }) => {
+    await delay(1) // 模拟网络延迟
 
-  http.put<never, Invoice, ApiResponse<Invoice>>(
-    `${import.meta.env.VITE_API_BASE}/invoices`,
-    async ({ request }) => {
-      await delay(1) // 模拟网络延迟
+    // 从请求体中获取传递的用户数据
+    const body = await request.json() // 自动推断为 IUser
+    // const newUser: User = await request.json()
+    // 返回状态码 201 表示成功创建
+    updateInvoice(body)
+    return HttpResponse.json(
+      {
+        code: 201,
+        message: 'Invoices retrieved successfully',
+      },
+      {
+        status: 201, // 创建成功状态码
+      },
+    )
 
-      // 从请求体中获取传递的用户数据
-      const body = await request.json() // 自动推断为 IUser
-      // const newUser: User = await request.json()
-      // 返回状态码 201 表示成功创建
-      updateInvoice(body)
-      return HttpResponse.json(
-        {
-          code: 201,
-          message: 'Invoices retrieved successfully',
-        },
-        {
-          status: 201, // 创建成功状态码
-        },
-      )
+    // return HttpResponse.json(
+    //   { success: true, data: body },
+    //   { status: 201, headers: { 'X-Mock': 'true' } }
+    // )
+  }),
 
-      // return HttpResponse.json(
-      //   { success: true, data: body },
-      //   { status: 201, headers: { 'X-Mock': 'true' } }
-      // )
-    },
-  ),
-
-  http.delete(`${import.meta.env.VITE_API_BASE}/invoices/:id`, async ({ params }) => {
+  http.delete(`${baseURL}/invoices/:id`, async ({ params }) => {
     await delay(1) // 模拟网络延迟
     try {
       const id = params.id
@@ -163,7 +157,7 @@ const handlers = [
   }),
 
   // 模拟 GET 请求失败
-  http.get(`${import.meta.env.VITE_API_BASE}/error`, async () => {
+  http.get(`${baseURL}/error`, async () => {
     await delay(150) // 模拟网络延迟
 
     // 返回状态码 500 表示服务器错误

@@ -1,3 +1,4 @@
+import { apiConfig } from '@/config/api'
 import axios, { type AxiosRequestConfig, type AxiosStatic } from 'axios'
 
 declare module 'axios' {
@@ -15,7 +16,7 @@ declare module 'axios' {
 const _axios: AxiosStatic = axios
 
 const getMockStatus = (config: AxiosRequestConfig): boolean => {
-  if (import.meta.env.PROD) return false
+  // if (import.meta.env.PROD) return false
 
   // 显式配置优先
   if (typeof config.mock === 'boolean') return config.mock
@@ -33,7 +34,7 @@ const getMockStatus = (config: AxiosRequestConfig): boolean => {
 }
 
 const http = _axios.create({
-  baseURL: import.meta.env.VITE_API_BASE || './',
+  baseURL: apiConfig.baseURL,
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
