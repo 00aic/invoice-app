@@ -47,8 +47,8 @@ Then crop/optimize/edit your image however you like, add it to your project, and
 
 ### Links
 
-- Solution URL: [Add solution URL here](https://your-solution-url.com)
-- Live Site URL: [Add live site URL here](https://your-live-site-url.com)
+- Solution URL: [Add solution URL here](https://github.com/00aic/invoice-app.git)
+- Live Site URL: [Add live site URL here](https://00aic.github.io/invoice-app/)
 
 ## My process
 
@@ -149,6 +149,13 @@ npm run dev
 
 ```sh
 npm run build
+```
+
+#### Deploy to Github Pages
+
+```sh
+npm run build
+npm run deploy
 ```
 
 #### Lint with [ESLint](https://eslint.org/)
