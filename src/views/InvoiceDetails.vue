@@ -187,7 +187,7 @@ $primary-gap: 13px;
   max-width: var(--width-main);
   flex: 1;
   flex-wrap: wrap;
-  min-height: 100vh;
+  // min-height: 100vh;
   padding: 0 24px;
 
   .back {
@@ -259,13 +259,13 @@ $primary-gap: 13px;
 
   .container {
     margin-top: 24px;
-    flex: 1;
+    flex: 1 1 100%;
     background-color: var(--color-background-1);
     display: flex;
     flex-direction: column;
     padding: 24px;
     gap: 21px;
-    min-height: 100vh;
+    // min-height: 100vh;
 
     .basic {
       display: flex;

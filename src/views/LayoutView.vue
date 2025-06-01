@@ -39,14 +39,14 @@ onMounted(() => {
   display: flex;
   flex: 1;
   background-color: var(--color-background);
-  min-height: 100vh;
+  // min-height: 100vh;
 
   .nav {
     display: flex;
     flex-direction: column;
     background-color: var(--color-background-nav);
     width: 103px;
-    min-height: 100vh;
+    // min-height: 100vh;
     align-items: center;
     border-top-right-radius: 20px;
     border-bottom-right-radius: 20px;
