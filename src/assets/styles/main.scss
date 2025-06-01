@@ -1,5 +1,7 @@
-/* color palette from <https://github.com/vuejs/theme> */
+// 亮色主题
 :root {
+  --width-main: 730px;
+
   --color-01: #7c5dfa;
   --color-02: #9277ff;
   --color-03: #1e2139;
@@ -33,7 +35,7 @@
   --color-client: var(--color-16);
   --color-border: var(--color-05);
 }
-// 8>5, 11>12
+// 暗色主题
 :root.moon {
   --color-background: var(--color-12);
   --color-background-1: var(--color-03);

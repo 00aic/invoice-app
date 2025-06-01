@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 // import jsonData from '@/assets/data.json'
 import { formatIntlDate } from '@/utils/dateUtils'
 import UpsertInvoice from './UpsertInvoice.vue'
@@ -9,10 +9,28 @@ import StatusBadge from '@/components/StatusBadge'
 import { formatNumber } from '@/utils/numberUtils'
 import { getInvoices, getInvoiceByStatus } from '@/api/invoice'
 import FilterWrapper from '@/components/FilterWrapper'
+import { useMediaQuery } from '@vueuse/core'
 
 const router = useRouter()
 
 const data = ref<Invoice[]>()
+
+const isPhone = useMediaQuery('(max-width: 767px)')
+
+const totalTitle = computed(() => {
+  if (isPhone.value) {
+    return data.value && data.value.length > 0 ? `${data.value.length} invoices` : 'No Invoices'
+  } else {
+    return data.value && data.value.length > 0
+      ? `There are ${data.value.length} total invoices`
+      : 'No Invoices'
+  }
+})
+
+const filterTitle = computed(() => (isPhone.value ? 'Filter' : 'Filter by status'))
+
+const newInvoiceTitle = computed(() => (isPhone.value ? 'New' : 'New Invoice'))
+
 // const data = ref<Invoice[]>(jsonData as Invoice[])
 
 // type Status = 'paid' | 'pending' | 'draft'
@@ -84,12 +102,12 @@ const handleFilter = async (selected: string[] | number[]) => {
       <div class="summary">
         <div class="summary__title">Invoices</div>
         <div class="summary__total">
-          {{ data && data.length > 0 ? `There are ${data.length} tatal invoices` : 'No Invoices' }}
+          {{ totalTitle }}
         </div>
       </div>
       <div class="operation">
         <FilterWrapper
-          title="Filter by status"
+          :title="filterTitle"
           v-model="filterSelected"
           :options="statusOptions"
           @filter="handleFilter"
@@ -99,7 +117,7 @@ const handleFilter = async (selected: string[] | number[]) => {
           <div class="operation__plus-wrapper">
             <img src="@/assets/images/icon-plus.svg" alt="Plus" />
           </div>
-          <span class="operation__plus-name">New Invoice</span>
+          <span class="operation__plus-name">{{ newInvoiceTitle }}</span>
         </button>
       </div>
     </div>
@@ -114,8 +132,8 @@ const handleFilter = async (selected: string[] | number[]) => {
           <div class="table__row-status-dot"></div>
           <div class="table__row-status-name">{{ item.status }}</div>
         </div> -->
-        <StatusBadge :status="item.status" />
-        <div class="table__row-arrow">
+        <StatusBadge class="table__row-status" :status="item.status" />
+        <div class="table__row-arrow" v-if="!isPhone">
           <img src="@/assets/images/icon-arrow-right.svg" alt="" />
         </div>
       </div>
@@ -135,9 +153,13 @@ const handleFilter = async (selected: string[] | number[]) => {
 <style lang="scss" scoped>
 .page {
   flex: 1;
+  justify-self: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  max-width: var(--width-main);
+  padding: 0 24px;
+  margin: 77px 0;
 
   // flex-wrap: wrap;
 
@@ -206,6 +228,7 @@ const handleFilter = async (selected: string[] | number[]) => {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    // padding: 0 24px;
 
     &__row {
       display: flex;
@@ -245,30 +268,6 @@ const handleFilter = async (selected: string[] | number[]) => {
         color: var(--color-text);
       }
 
-      // &-status {
-      //   flex: 0 1 104px;
-      //   background-color: var(--bg-color);
-      //   border-radius: 6px;
-      //   height: 40px;
-      //   display: flex;
-      //   gap: 8px;
-      //   align-items: center;
-      //   justify-content: center;
-
-      //   &-dot {
-      //     height: 8px;
-      //     width: 8px;
-      //     border-radius: 50%;
-      //     background-color: var(--text-color);
-      //   }
-
-      //   &-name {
-      //     color: var(--text-color);
-      //     text-transform: capitalize; /* 每个单词首字母大写 */
-      //     @include text.text-styles('heading-s-variant');
-      //   }
-      // }
-
       &-arrow {
         flex: 0 1 0;
         padding: 0 24px 0 20px;
@@ -302,6 +301,59 @@ const handleFilter = async (selected: string[] | number[]) => {
 
         span {
           font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .page {
+    margin: 32px 0;
+    .header {
+      .operation {
+        &__plus {
+          gap: 8px;
+        }
+      }
+    }
+
+    .table {
+      &__row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        grid-template-areas:
+          'id client'
+          'due status'
+          'total status';
+        // align-items: center;
+        // justify-items: center;
+        gap: 9px;
+        height: unset;
+        padding: 24px;
+
+        &-id {
+          grid-area: id;
+          justify-self: start;
+        }
+        &-due {
+          grid-area: due;
+          justify-self: start;
+          margin-top: 17px;
+        }
+        &-client {
+          grid-area: client;
+          justify-self: end;
+        }
+        &-total {
+          grid-area: total;
+          justify-self: start;
+        }
+        &-status {
+          grid-area: status;
+          justify-self: end;
+          margin-top: 17px;
         }
       }
     }

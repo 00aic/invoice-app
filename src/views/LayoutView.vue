@@ -25,8 +25,8 @@ onMounted(() => {
         />
         <img v-else src="@/assets/images/icon-sun.svg" alt="Theme" />
       </div>
-      <div class="nav__avatar">
-        <img class="nav__avatar-img" src="@/assets/images/image-avatar.jpg" alt="Avatar" />
+      <div class="avatar">
+        <img class="avatar__img" src="@/assets/images/image-avatar.jpg" alt="Avatar" />
       </div>
     </nav>
     <main class="layout__main">
@@ -39,6 +39,7 @@ onMounted(() => {
   display: flex;
   flex: 1;
   background-color: var(--color-background);
+  min-height: 100vh;
 
   .nav {
     display: flex;
@@ -62,6 +63,7 @@ onMounted(() => {
 
         &-bg1 {
           height: 65%;
+          width: 100%;
           background-color: var(--color-01);
           border-top-right-radius: 20px;
         }
@@ -89,7 +91,7 @@ onMounted(() => {
       cursor: pointer;
     }
 
-    &__avatar {
+    .avatar {
       padding: 24px 0;
       border-top: 1px solid #494e6e;
       margin-top: 32px;
@@ -97,7 +99,7 @@ onMounted(() => {
       display: flex;
       justify-content: center;
 
-      &-img {
+      &__img {
         display: block;
         height: 40px;
         width: 40px;
@@ -107,8 +109,60 @@ onMounted(() => {
   }
   &__main {
     flex: 1;
-    padding: 77px 355px 0 252px;
+    display: flex;
+    padding: 32px 0;
     background-color: var(--color-background);
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+    // min-height: calc(100vh + 80px);
+
+    .nav {
+      min-height: unset;
+      width: unset;
+      border-top-right-radius: unset;
+      border-bottom-right-radius: unset;
+
+      flex-direction: row;
+      min-width: 100vw;
+      height: 80px;
+
+      .logo {
+        &__wrapper {
+          height: 80px;
+          width: 80px;
+
+          &-bg2 {
+            top: 40px;
+          }
+
+          &-img {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 31px;
+            height: 31px;
+          }
+        }
+      }
+      .avatar {
+        border-top: unset;
+        width: unset;
+        margin-top: unset;
+        // padding: 24px;
+        border-left: 1px solid #494e6e;
+        margin-left: 24px;
+        &__img {
+          width: 32px;
+          height: 32px;
+          margin: 0 24px;
+        }
+      }
+    }
   }
 }
 </style>

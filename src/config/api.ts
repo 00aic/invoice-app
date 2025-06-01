@@ -6,9 +6,9 @@ interface ApiConfig {
 /**
  * 标准化URL路径（移除结尾斜杠）
  */
-const normalizeURL = (url: string): string => {
-  return url.endsWith('/') ? url.slice(0, -1) : url
-}
+// const normalizeURL = (url: string): string => {
+//   return url.endsWith('/') ? url.slice(0, -1) : url
+// }
 
 /**
  * 获取Mock基础路径

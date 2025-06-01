@@ -8,6 +8,9 @@ import { onMounted, ref } from 'vue'
 import ConfirmationDialog from '@/components/ConfirmationDialog'
 import { deleteInvoiceById, getInvoiceById, updateInvoice } from '@/api/invoice'
 import type { Invoice } from '@/types/invoice'
+import { useMediaQuery } from '@vueuse/core'
+
+const isPhone = useMediaQuery('(max-width: 767px)')
 
 const router = useRouter()
 const route = useRoute()
@@ -61,17 +64,17 @@ const handlePaidConfirm = async () => {
       <div><img src="@/assets/images/icon-arrow-left.svg" alt="Go back" /></div>
       <div class="back__title">Go back</div>
     </div>
-    <header class="header">
-      <div class="header__status">
-        <div>Status</div>
-        <StatusBadge :status="currentInvoice?.status ?? 'draft'" />
-      </div>
-      <div class="header__button">
-        <button class="header__button-edit" @click="handleInvoiceEdit">Edit</button>
-        <button class="header__button-delete" @click="handleInvoiceDelete">Delete</button>
-        <button class="header__button-paid" @click="handleInvoicePaid">Mask as Paid</button>
-      </div>
-    </header>
+    <!-- <header class="header"> -->
+    <div class="header__status">
+      <div>Status</div>
+      <StatusBadge :status="currentInvoice?.status ?? 'draft'" />
+    </div>
+    <div class="header__button">
+      <button class="header__button-edit" @click="handleInvoiceEdit">Edit</button>
+      <button class="header__button-delete" @click="handleInvoiceDelete">Delete</button>
+      <button class="header__button-paid" @click="handleInvoicePaid">Mask as Paid</button>
+    </div>
+    <!-- </header> -->
     <div class="container">
       <div class="basic">
         <div class="basic__info">
@@ -122,24 +125,29 @@ const handlePaidConfirm = async () => {
       </div>
 
       <div class="items">
-        <table class="table">
-          <thead class="table__head">
-            <tr>
-              <th>Item Name</th>
-              <th>QTY.</th>
-              <th>Price</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody class="table__body">
-            <tr v-for="(item, index) in currentInvoice?.items" :key="`item${index}`">
-              <td>{{ item.name }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ formatNumber(item.price) }}</td>
-              <td>{{ formatNumber(item.total) }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table">
+          <div class="head" v-if="!isPhone">
+            <div class="row">
+              <div class="column">Item Name</div>
+              <div class="details">
+                <div>QTY.</div>
+                <div>Price</div>
+              </div>
+
+              <div class="column">Total</div>
+            </div>
+          </div>
+          <div class="body">
+            <div v-for="(item, index) in currentInvoice?.items" :key="`item${index}`" class="row">
+              <div class="body-name column">{{ item.name }}</div>
+              <div class="details">
+                <div class="body-quantity">{{ item.quantity }}</div>
+                <div class="body-price">{{ formatNumber(item.price) }}</div>
+              </div>
+              <div class="body-total column">{{ formatNumber(item.total) }}</div>
+            </div>
+          </div>
+        </div>
         <div class="items__price">
           <div class="items__price-title">Amount Due</div>
           <div class="items__price-total">{{ formatNumber(currentInvoice?.total ?? 0) }}</div>
@@ -174,15 +182,21 @@ $primary-gap: 13px;
 
 .detail {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  // flex-direction: column;
+  justify-content: center;
+  max-width: var(--width-main);
+  flex: 1;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  padding: 0 24px;
 
   .back {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-bottom: 7px;
+    margin-bottom: 31px;
     cursor: pointer;
+    flex: 1 1 100%;
 
     &__title {
       @include text.text-styles('heading-s-variant');
@@ -191,24 +205,29 @@ $primary-gap: 13px;
   }
 
   .header {
-    display: flex;
-    justify-content: space-between;
-    height: 88px;
-    background-color: var(--color-background-1);
-    padding: 24px 32px;
-    border-radius: 8px;
-
     &__status {
       display: flex;
       align-items: center;
       gap: 20px;
       color: var(--color-status);
+      height: 88px;
+      background-color: var(--color-background-1);
+      padding: 24px 32px;
+      // border-radius: 8px;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
     }
 
     &__button {
+      flex: 1;
+      height: 88px;
       display: flex;
       gap: 8px;
-      height: 48px;
+      background-color: var(--color-background-1);
+      padding: 24px 32px;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+      justify-content: end;
 
       button {
         border: none;
@@ -239,12 +258,14 @@ $primary-gap: 13px;
   }
 
   .container {
+    margin-top: 24px;
+    flex: 1;
     background-color: var(--color-background-1);
     display: flex;
     flex-direction: column;
-    padding: 48px;
+    padding: 24px;
     gap: 21px;
-    height: calc(100vh - 158px);
+    min-height: 100vh;
 
     .basic {
       display: flex;
@@ -327,74 +348,181 @@ $primary-gap: 13px;
         color: var(--color-text);
       }
     }
-  }
-  .items {
-    margin-top: 26px;
-    .table {
-      display: flex;
-      flex-direction: column;
-      gap: 32px;
-      background-color: var(--color-background-2);
-      padding: 32px;
-      border-top-right-radius: 8px;
-      border-top-left-radius: 8px;
 
-      &__head,
-      &__body {
+    .items {
+      margin-top: 26px;
+      .table {
         display: flex;
         flex-direction: column;
         gap: 32px;
-      }
+        background-color: var(--color-background-2);
+        padding: 32px;
+        border-top-right-radius: 8px;
+        border-top-left-radius: 8px;
 
-      &__head {
-        @include text.text-styles('body');
-        color: var(--color-07);
-      }
-
-      &__body {
-        @include text.text-styles('heading-s-variant');
-      }
-      tr {
-        display: flex;
-        th,
-        td {
-          flex: 1;
-          text-align: right;
-
-          &:first-child {
-            text-align: left;
-          }
+        .head,
+        .body {
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
         }
-        td {
+
+        .head {
+          @include text.text-styles('body');
           color: var(--color-07);
-          &:first-child,
-          &:last-child {
+        }
+
+        .body {
+          @include text.text-styles('heading-s-variant');
+        }
+        .row {
+          display: flex;
+          .column {
+            flex: 1;
+            text-align: right;
+
+            &:first-child {
+              text-align: left;
+            }
+          }
+          .body .column {
             color: var(--color-text);
           }
+
+          .details {
+            display: flex;
+            flex: 1;
+            color: var(--color-07);
+            justify-content: end;
+
+            div {
+              display: flex;
+              flex: 1;
+              justify-content: end;
+            }
+          }
+        }
+      }
+
+      &__price {
+        background-color: var(--color-background-3);
+        height: 80px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 32px;
+        align-items: center;
+        border-bottom-right-radius: 8px;
+        border-bottom-left-radius: 8px;
+
+        &-title {
+          @include text.text-styles('body');
+        }
+
+        &-total {
+          font-weight: bold;
+          font-size: 24px;
+          line-height: 32px;
+          letter-spacing: -0.5px;
         }
       }
     }
+  }
+}
 
-    &__price {
-      background-color: var(--color-background-3);
-      height: 80px;
-      color: white;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 32px;
-      align-items: center;
-      border-bottom-right-radius: 8px;
-      border-bottom-left-radius: 8px;
-
-      &-title {
-        @include text.text-styles('body');
+@media (max-width: 767px) {
+  .detail {
+    // .back {
+    //   // margin: 24px;
+    // }
+    .header {
+      &__status {
+        // margin: 24px;
+        flex: 1;
+        justify-content: space-between;
+        border: 8px;
+        height: 91px;
+        padding: 24px;
       }
 
-      &-total {
-        font-weight: bold;
-        font-size: 24px;
-        line-height: 32px;
-        letter-spacing: -0.5px;
+      &__button {
+        order: 1;
+        height: 91px;
+        padding: 24px;
+        justify-content: center;
+        margin-top: auto;
+        border: none;
+      }
+    }
+    .container {
+      // margin: 16px 0;
+      padding: 24px;
+
+      .basic {
+        flex-direction: column;
+        gap: 30px;
+
+        &__address {
+          align-items: start;
+        }
+      }
+
+      .primary {
+        flex-wrap: wrap;
+
+        &__date {
+          flex: 1 1 50%;
+          gap: 0;
+        }
+      }
+
+      .items {
+        .table {
+          .body {
+            .row {
+              display: grid;
+              grid-template-columns: auto 1fr;
+              grid-template-rows: repeat(2, 1fr);
+              grid-template-areas:
+                'name total'
+                'details total';
+              // gap: 5px;
+              &::before {
+                content: '';
+                display: flex;
+                grid-area: details;
+              }
+
+              .details {
+                justify-content: stretch;
+                div {
+                  display: block;
+                  flex: none;
+                }
+              }
+            }
+
+            &-name {
+              grid-area: name;
+            }
+            &-quantity,
+            &-price {
+              grid-area: details;
+              justify-self: start;
+            }
+            &-total {
+              grid-area: total;
+              // justify-self: end;
+            }
+
+            &-quantity {
+              &::after {
+                content: ' x ';
+                margin: 0 5px;
+              }
+            }
+          }
+        }
       }
     }
   }
